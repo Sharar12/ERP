@@ -1,0 +1,1306 @@
+# Project Prompt: Build a Universal, Modular, Multi-Tenant ERP System
+
+Act as a senior software architect, UI/UX designer, database architect, and full-stack development team. Design and develop a complete, production-ready **Universal ERP (Enterprise Resource Planning) Web Application** that can be reused, customized, and deployed for businesses across different industries and countries.
+
+The system must be modular, scalable, secure, configurable, and suitable for small businesses, medium-sized companies, and large enterprises. It should not be limited to any single industry.
+
+Do not build just a dashboard or static UI prototype. Build a functional ERP platform with real backend logic, database integration, authentication, authorization, business workflows, reporting, and CRUD operations.
+
+---
+
+# 1. Technology Stack
+
+## Frontend
+- Next.js with App Router
+- TypeScript
+- Tailwind CSS
+- React
+- Reusable component architecture
+- Responsive design
+- REST API integration
+
+## Backend
+- PHP
+- Laravel
+- Laravel API architecture
+- RESTful API
+- Laravel validation and authorization
+- Background jobs and scheduled tasks where needed
+
+## Database
+- MySQL
+- Relational database architecture
+- Proper foreign keys, indexes, constraints, and transactions
+- Database migrations and seeders
+
+## Development Architecture
+Use a clean, maintainable, modular architecture.
+
+Maintain separate frontend and backend applications:
+
+- `/frontend` — Next.js application
+- `/backend` — Laravel application
+- `/docs` — Technical documentation
+- `/deployment` — Deployment configurations
+
+The frontend must communicate with Laravel through versioned APIs such as `/api/v1/`.
+
+Never place business-critical logic exclusively in the frontend.
+
+---
+
+# 2. Core Vision: Universal ERP
+
+Create one reusable ERP platform that can serve different business types without requiring a completely different application for each industry.
+
+The system should support businesses such as:
+
+- Manufacturing
+- Retail and wholesale
+- E-commerce
+- Distribution
+- Trading
+- Construction
+- Healthcare administration
+- Education administration
+- Restaurants and hospitality
+- Logistics and transportation
+- Professional services
+- Real estate
+- Import and export
+- General corporate businesses
+
+Use a **modular architecture** where each business can enable only the modules it needs.
+
+For example:
+- A retail company can enable Sales, POS, Inventory, Purchasing, and Accounting.
+- A manufacturing company can enable Production, Inventory, Procurement, Quality Control, and Accounting.
+- A service company can enable CRM, Projects, HR, Invoicing, and Accounting.
+
+Avoid hardcoding industry-specific assumptions into the core system.
+
+---
+
+# 3. Multi-Tenant Business Architecture
+
+The ERP must support multiple independent businesses using the same application.
+
+Implement a secure multi-tenant architecture.
+
+Each tenant must have:
+
+- Company profile
+- Company logo and branding
+- Business type
+- Company registration information
+- Tax identification information
+- Address and contact details
+- Financial year configuration
+- Default currency
+- Timezone
+- Date and number formats
+- Language preferences
+- Tax configuration
+- Enabled modules
+- Subscription or licensing information
+
+A tenant must never be able to access another tenant's data.
+
+Implement tenant-aware database queries, API authorization, background jobs, file access, and reporting.
+
+Support:
+- One user belonging to multiple companies.
+- Switching between companies.
+- Multiple branches and locations.
+- Multiple departments.
+- Multiple warehouses.
+- Multiple business units.
+
+Provide a clear distinction between platform-level administration and tenant-level administration.
+
+---
+
+# 4. Platform-Level Administration
+
+Create a dedicated **Super Admin Panel** for managing the entire ERP platform.
+
+Features:
+
+- Dashboard with platform statistics
+- Tenant management
+- Company registration and approval
+- Subscription and plan management
+- Module availability management
+- User and account management
+- System-wide configuration
+- Global notification management
+- Platform activity logs
+- System health information
+- License management
+- Storage and usage monitoring
+- Tenant suspension and activation
+- Platform-wide announcements
+
+Super Admin must be able to configure which modules and features are available to each subscription plan or tenant.
+
+Do not give Super Admin automatic access to private tenant business data without an explicit, audited administrative access process.
+
+---
+
+# 5. Tenant Administration
+
+Every company should have its own administration panel.
+
+Features:
+
+- Company settings
+- Branch management
+- Department management
+- Warehouse management
+- Employee management
+- User management
+- Role management
+- Permission management
+- Module activation and configuration
+- Business settings
+- Tax settings
+- Currency settings
+- Notification settings
+- Document numbering configuration
+- Approval workflow configuration
+- Custom fields
+- Custom business attributes
+- Import and export settings
+
+Allow authorized administrators to configure the ERP according to their business requirements without modifying the source code.
+
+---
+
+# 6. Core ERP Modules
+
+Build the following modules as independent but interconnected components.
+
+Each module should have its own interface, backend services, API endpoints, permissions, database tables, and configuration.
+
+Modules must be independently enabled or disabled.
+
+## A. Dashboard Module
+
+Create a dynamic dashboard that changes based on:
+- User permissions
+- Enabled modules
+- Company configuration
+- Selected branch
+- Reporting period
+
+Display relevant information such as:
+
+- Total revenue
+- Total expenses
+- Net profit
+- Sales performance
+- Purchase performance
+- Outstanding invoices
+- Outstanding payments
+- Inventory valuation
+- Low-stock alerts
+- Employee statistics
+- Customer statistics
+- Supplier statistics
+- Recent transactions
+- Pending approvals
+- Business activity
+
+Include interactive charts, date filters, comparisons, and customizable dashboard widgets.
+
+Users should be able to personalize their dashboard where permitted.
+
+## B. CRM Module
+
+Features:
+
+- Customer management
+- Lead management
+- Prospect management
+- Contact management
+- Sales opportunities
+- Customer communication history
+- Customer groups
+- Customer follow-ups
+- Customer notes
+- Customer documents
+- Lead assignment
+- Lead conversion
+- Customer activity timeline
+
+## C. Sales Management Module
+
+Features:
+
+- Quotations
+- Sales orders
+- Sales invoices
+- Sales returns
+- Credit notes
+- Delivery orders
+- Customer payment records
+- Discounts
+- Sales commissions
+- Sales representatives
+- Sales channels
+- Sales reports
+
+Support configurable approval processes and complete sales lifecycle tracking.
+
+## D. Purchase and Procurement Module
+
+Features:
+
+- Supplier management
+- Purchase requests
+- Request for quotation
+- Supplier quotations
+- Purchase orders
+- Goods receiving
+- Purchase invoices
+- Purchase returns
+- Supplier payments
+- Procurement approvals
+- Purchase history
+- Supplier performance reports
+
+## E. Inventory and Warehouse Module
+
+Features:
+
+- Product management
+- Product categories
+- Product variants
+- SKU and barcode management
+- Units of measurement
+- Multiple warehouses
+- Multiple storage locations
+- Stock receiving
+- Stock issuing
+- Stock transfers
+- Stock adjustments
+- Stock reservations
+- Batch tracking
+- Serial number tracking
+- Expiry date tracking
+- Reorder levels
+- Low-stock alerts
+- Inventory valuation
+- Stock movement history
+- Stock audit
+- Inventory reports
+
+Support configurable inventory valuation methods and ensure stock movements are transactionally consistent.
+
+## F. Product and Service Management
+
+Features:
+
+- Physical products
+- Digital products
+- Services
+- Product bundles
+- Product variants
+- Product attributes
+- Product images
+- Product specifications
+- Barcode and SKU
+- Purchase price
+- Selling price
+- Multiple price lists
+- Tax configuration
+- Units of measurement
+- Product status
+- Custom fields
+
+## G. Accounting and Finance Module
+
+Build a reliable accounting foundation.
+
+Features:
+
+- Chart of accounts
+- Double-entry bookkeeping
+- Journal entries
+- General ledger
+- Accounts receivable
+- Accounts payable
+- Customer invoices
+- Supplier bills
+- Cash management
+- Bank accounts
+- Bank transactions
+- Payment vouchers
+- Receipt vouchers
+- Expense management
+- Income management
+- Tax management
+- Financial periods
+- Cost centers
+- Budget management
+- Financial statements
+- Profit and loss statement
+- Balance sheet
+- Cash flow statement
+- Trial balance
+- Account reconciliation
+
+Every posted financial transaction must maintain balanced debit and credit entries.
+
+Use proper transaction handling and prevent unauthorized modification of posted accounting records. Implement corrections through controlled reversal or adjustment entries.
+
+Support multiple currencies, exchange rates, configurable tax rules, and configurable accounting periods.
+
+Do not assume one country's accounting or tax regulations are universal. Make country-specific rules configurable and document any limitations.
+
+## H. Human Resource Management (HRM)
+
+Features:
+
+- Employee profiles
+- Employee documents
+- Departments
+- Designations
+- Employment history
+- Attendance
+- Leave management
+- Leave approvals
+- Shift management
+- Employee schedules
+- Payroll
+- Salary structures
+- Allowances
+- Deductions
+- Bonuses
+- Employee performance
+- Recruitment
+- Training
+- HR reports
+
+Design payroll and statutory deductions to be configurable according to the tenant's country and applicable rules.
+
+## I. Project Management
+
+Features:
+
+- Project creation
+- Project assignments
+- Project teams
+- Task management
+- Task priorities
+- Task deadlines
+- Task status
+- Progress tracking
+- Project milestones
+- Project budgets
+- Project expenses
+- Time tracking
+- File attachments
+- Project reports
+
+## J. Manufacturing Management
+
+Features:
+
+- Bill of Materials (BOM)
+- Production planning
+- Work orders
+- Raw material management
+- Production operations
+- Work centers
+- Material consumption
+- Finished goods
+- Production costing
+- Quality control
+- Production tracking
+- Manufacturing reports
+
+This module should be optional and must integrate with Inventory and Accounting.
+
+## K. Point of Sale (POS)
+
+Features:
+
+- POS interface
+- Barcode scanning
+- Product search
+- Shopping cart
+- Multiple payment methods
+- Discounts
+- Tax calculation
+- Customer selection
+- Invoice generation
+- Receipt printing
+- Cash register sessions
+- Cash opening and closing
+- Sales returns
+- POS reports
+
+Design the POS interface for fast keyboard and barcode-based operation.
+
+## L. Document Management
+
+Features:
+
+- File uploads
+- Document categories
+- Document versions
+- Document permissions
+- Document sharing within a tenant
+- Document linking to business records
+- Document expiry reminders
+- Search and filtering
+- Download and preview
+- Audit history
+
+## M. Reporting and Analytics
+
+Create a centralized reporting system.
+
+Features:
+
+- Sales reports
+- Purchase reports
+- Inventory reports
+- Financial reports
+- HR reports
+- Customer reports
+- Supplier reports
+- Project reports
+- Manufacturing reports
+- Tax reports
+- Branch performance
+- User activity reports
+
+Allow filtering by:
+- Date range
+- Company
+- Branch
+- Department
+- Warehouse
+- User
+- Category
+- Status
+
+Support PDF, Excel, and CSV exports.
+
+Reports must respect tenant isolation and user permissions.
+
+## N. Notification and Communication
+
+Features:
+
+- In-app notifications
+- Email notifications
+- Optional SMS integration
+- Notification preferences
+- Approval notifications
+- Payment reminders
+- Invoice reminders
+- Low-stock alerts
+- Leave notifications
+- System announcements
+
+Use a configurable notification architecture so external providers can be integrated later.
+
+## O. Approval and Workflow Management
+
+Build a reusable workflow engine.
+
+Allow administrators to configure:
+
+- Approval types
+- Approval stages
+- Approval conditions
+- Approver roles
+- Specific approvers
+- Approval limits
+- Sequential approvals
+- Parallel approvals
+- Rejection rules
+- Re-submission rules
+- Escalation rules
+- Workflow history
+
+Examples:
+- Purchase orders above a specified amount require manager approval.
+- Employee leave requests require supervisor approval.
+- Expenses above a configurable limit require finance approval.
+
+The workflow engine must be reusable across different modules.
+
+---
+
+# 7. Reusability and Customization Engine
+
+This is one of the most important requirements.
+
+The ERP must be reusable across industries without repeatedly modifying its core source code.
+
+Implement:
+
+## Dynamic Module System
+- Enable and disable modules.
+- Control module dependencies.
+- Configure module access by subscription plan.
+- Configure module access by tenant.
+- Hide disabled modules from navigation.
+- Prevent disabled module APIs from being accessed by unauthorized tenants.
+
+## Custom Fields
+Allow authorized administrators to add custom fields to supported business entities.
+
+Support:
+- Text
+- Text area
+- Number
+- Decimal
+- Date
+- Date and time
+- Dropdown
+- Multi-select
+- Checkbox
+- Radio options
+- File upload
+- URL
+
+Custom fields must support validation, display configuration, and permissions.
+
+## Custom Statuses
+Allow administrators to define additional statuses for supported workflows without breaking built-in business logic.
+
+## Custom Document Numbering
+Allow configurable numbering formats for:
+- Invoices
+- Quotations
+- Purchase orders
+- Sales orders
+- Payment vouchers
+- Employee records
+- Other supported documents
+
+Support prefixes, date segments, sequence numbers, and branch-specific sequences.
+
+## Custom Branding
+Allow each tenant to configure:
+- Logo
+- Company name
+- Brand colors
+- Login branding
+- Report branding
+- Invoice templates
+- Email templates
+
+## Dynamic Forms
+Develop reusable form components that can render standard and custom fields from configuration.
+
+## Integration Architecture
+Design extension points for:
+- Payment gateways
+- Accounting integrations
+- E-commerce platforms
+- Shipping providers
+- SMS providers
+- Email providers
+- External APIs
+- Webhooks
+
+Use adapters or service interfaces so adding a provider does not require rewriting existing modules.
+
+---
+
+# 8. User Authentication and Authorization
+
+Implement secure authentication and a complete Role-Based Access Control (RBAC) system.
+
+Features:
+
+- User registration through authorized company onboarding
+- Login
+- Logout
+- Forgot password
+- Password reset
+- Email verification
+- Session management
+- Optional two-factor authentication
+- Account activation and deactivation
+- Login history
+- Device and session management
+
+## Role and Permission System
+
+Create flexible roles such as:
+
+- Super Admin
+- Company Owner
+- Company Admin
+- Branch Manager
+- Department Manager
+- Accountant
+- Sales Manager
+- Sales Executive
+- Purchase Manager
+- Warehouse Manager
+- HR Manager
+- Employee
+- Custom Roles
+
+These should be editable and not permanently hardcoded as the only available roles.
+
+Permissions must be granular.
+
+Examples:
+- View customers
+- Create customers
+- Edit customers
+- Delete customers
+- View invoices
+- Create invoices
+- Approve invoices
+- Cancel invoices
+- Export reports
+- Manage employees
+- View payroll
+- Manage company settings
+
+Also support data-level restrictions where appropriate, such as limiting users to their assigned branch or department.
+
+Enforce authorization in Laravel, not just by hiding frontend buttons.
+
+Never store sensitive access tokens in browser localStorage. Prefer secure, HttpOnly cookie-based authentication where the deployment architecture supports it. Document the chosen authentication strategy and its security implications.
+
+---
+
+# 9. UI/UX Design Requirements
+
+Create a modern, professional, premium-quality ERP interface.
+
+The design should look like a high-quality enterprise SaaS product.
+
+Use a clean visual hierarchy, consistent spacing, accessible colors, intuitive navigation, and reusable design components.
+
+## Main Layout
+
+Create:
+- Responsive sidebar navigation
+- Top navigation bar
+- Company switcher
+- Branch selector
+- Global search
+- Notification center
+- User profile menu
+- Breadcrumb navigation
+- Main content area
+
+## Sidebar
+
+The sidebar must be dynamically generated based on:
+- Enabled modules
+- User permissions
+- Tenant configuration
+
+Support:
+- Collapsible navigation
+- Module grouping
+- Nested navigation
+- Active page indicators
+- Responsive mobile navigation
+
+## Design Style
+
+Use:
+- Modern SaaS dashboard aesthetics
+- Clean typography
+- Light and dark themes
+- Subtle borders and shadows
+- Consistent spacing
+- Professional data tables
+- Clear action buttons
+- Attractive charts
+- Useful empty states
+- Loading states
+- Error states
+- Confirmation dialogs
+- Toast notifications
+
+Avoid excessive gradients, unnecessary animations, cluttered layouts, and oversized decorative elements.
+
+## Reusable UI Components
+
+Develop a shared component library containing:
+
+- Buttons
+- Inputs
+- Selects
+- Dropdowns
+- Date pickers
+- Modals
+- Drawers
+- Tooltips
+- Tabs
+- Badges
+- Cards
+- Data tables
+- Pagination
+- Filters
+- Search bars
+- File uploaders
+- Rich text editors where needed
+- Charts
+- Form layouts
+- Confirmation dialogs
+- Notification components
+- Permission-aware action components
+
+All forms and tables should be reusable, consistent, responsive, and accessible.
+
+## Data Table Requirements
+
+Every major listing page should support:
+
+- Search
+- Filters
+- Sorting
+- Pagination
+- Column visibility
+- Row selection
+- Bulk actions where appropriate
+- Export
+- Record details
+- Create, edit, and view actions
+- Permission-aware controls
+
+Use server-side pagination, filtering, and sorting for large datasets.
+
+---
+
+# 10. Global Search
+
+Create a centralized search system.
+
+Users should be able to search accessible records such as:
+
+- Customers
+- Suppliers
+- Products
+- Invoices
+- Purchase orders
+- Sales orders
+- Employees
+- Projects
+- Documents
+
+Search results must respect tenant boundaries, permissions, and selected business context.
+
+---
+
+# 11. Internationalization and Localization
+
+The ERP must be suitable for international use.
+
+Support:
+- Multiple languages
+- Translation-ready interfaces
+- Right-to-left language layouts
+- Multiple currencies
+- Currency formatting
+- Multiple timezones
+- Configurable date formats
+- Configurable number formats
+- Country-specific settings
+- Regional tax configurations
+- Localized documents and invoices
+
+Do not hardcode currency symbols, date formats, tax percentages, or country-specific business rules.
+
+Provide a default configuration while allowing each tenant to change it.
+
+---
+
+# 12. Database Architecture
+
+Design a normalized, scalable MySQL database.
+
+Use consistent naming conventions, foreign keys, indexes, unique constraints, and appropriate data types.
+
+The architecture should include common system tables such as:
+
+- tenants
+- tenant_users
+- branches
+- departments
+- warehouses
+- users
+- roles
+- permissions
+- role_permissions
+- user_roles
+- modules
+- tenant_modules
+- subscriptions
+- settings
+- custom_fields
+- custom_field_values
+- workflows
+- workflow_steps
+- approval_requests
+- notifications
+- attachments
+- audit_logs
+
+Create separate domain tables for the individual ERP modules.
+
+Important database principles:
+
+- Every tenant-owned record must be scoped to its tenant.
+- Use consistent tenant and ownership relationships.
+- Add indexes for frequently filtered fields.
+- Use database transactions for critical operations.
+- Prevent duplicate document numbers within their configured scope.
+- Use decimal types for financial values rather than floating-point types.
+- Store timestamps consistently and display them in the tenant's timezone.
+- Use soft deletes only where business requirements allow them.
+- Do not use one oversized universal table for unrelated business entities.
+- Avoid unnecessary duplication of data.
+- Use appropriate cascading and restrictive delete behavior.
+- Maintain historical records for important business transactions.
+
+Create complete Laravel migrations, factories, and seeders.
+
+Provide an Entity Relationship Diagram (ERD) and database documentation.
+
+---
+
+# 13. Backend Architecture and API Standards
+
+Organize Laravel using clear domain boundaries.
+
+Use:
+- Controllers
+- Form Requests
+- Services
+- Repositories only where they add real value
+- Models
+- Policies
+- API Resources
+- Events
+- Listeners
+- Jobs
+- Notifications
+- Middleware
+- Console commands
+
+Avoid putting all business logic inside controllers.
+
+## API Requirements
+
+- Version all API endpoints.
+- Use consistent JSON response structures.
+- Validate all incoming requests.
+- Implement pagination.
+- Implement filtering and sorting.
+- Use proper HTTP status codes.
+- Return meaningful error messages.
+- Protect all tenant-owned resources.
+- Apply authorization policies.
+- Document APIs using OpenAPI/Swagger.
+- Implement rate limiting.
+- Support idempotency for critical operations where appropriate.
+
+Use database transactions for operations involving multiple related records.
+
+Implement automated backend tests for important business workflows.
+
+---
+
+# 14. Frontend Architecture
+
+Use Next.js App Router with TypeScript.
+
+Organize the frontend into reusable modules.
+
+Suggested structure:
+
+- `app/`
+- `components/`
+- `components/ui/`
+- `components/layout/`
+- `components/forms/`
+- `features/`
+- `hooks/`
+- `lib/`
+- `services/`
+- `types/`
+- `constants/`
+- `config/`
+- `providers/`
+
+Each ERP module should have its own feature directory.
+
+Use:
+- Reusable form components
+- Typed API service functions
+- Centralized API configuration
+- Consistent error handling
+- Protected routes
+- Permission-aware rendering
+- Loading and error boundaries
+- Form validation
+- Shared table components
+- Clear TypeScript interfaces
+
+Avoid unnecessary code duplication.
+
+Do not make every page a giant component.
+
+Use server and client components appropriately.
+
+---
+
+# 15. Business Rules and Data Integrity
+
+All modules must work together through consistent business workflows.
+
+Examples:
+
+**Sales workflow:**
+
+Quotation → Sales Order → Delivery → Invoice → Payment → Accounting Entries
+
+**Purchase workflow:**
+
+Purchase Request → Approval → Purchase Order → Goods Receipt → Supplier Bill → Payment → Accounting Entries
+
+**Inventory workflow:**
+
+Goods Receipt → Stock Increase → Stock Movement Record → Inventory Valuation
+
+**Manufacturing workflow:**
+
+Production Order → Raw Material Consumption → Production → Finished Goods → Inventory Update
+
+**HR workflow:**
+
+Leave Request → Approval → Leave Balance Update
+
+Ensure that related records update correctly and that failed transactions do not leave partially completed business operations.
+
+Define which documents are drafts, submitted, approved, posted, cancelled, or reversed.
+
+Maintain a complete history of important status changes.
+
+---
+
+# 16. Audit, Logging, and Security
+
+Security is a core requirement, not an optional enhancement.
+
+Implement:
+
+- Tenant isolation
+- Authorization policies
+- Secure authentication
+- Password hashing
+- Input validation
+- SQL injection protection
+- XSS protection
+- CSRF protection where applicable
+- Rate limiting
+- Secure file uploads
+- File access permissions
+- Audit logging
+- Login activity tracking
+- Sensitive action tracking
+- Secure environment variables
+- Production error handling
+- Backup and restoration procedures
+
+Audit logs should capture important actions, including:
+- User
+- Tenant
+- Action
+- Module
+- Record reference
+- Timestamp
+- Relevant change information
+- Request context where appropriate
+
+Never log passwords, access tokens, or other secrets.
+
+Do not expose sensitive financial, HR, or company information to unauthorized users.
+
+---
+
+# 17. Performance and Scalability
+
+Design the application to handle growing companies and large amounts of business data.
+
+Implement:
+
+- Efficient database queries
+- Database indexes
+- Server-side pagination
+- Query optimization
+- Caching where appropriate
+- Background processing for heavy operations
+- Queue-based notifications
+- Scheduled tasks
+- Efficient report generation
+- File storage abstraction
+- Configurable upload limits
+- Monitoring and error logging
+
+Avoid unnecessary API requests and excessive frontend rendering.
+
+Ensure the system can scale horizontally where the infrastructure permits.
+
+---
+
+# 18. Testing and Quality Assurance
+
+Create a practical testing strategy covering the entire system.
+
+## Backend Testing
+- Authentication tests
+- Authorization tests
+- Tenant isolation tests
+- CRUD tests
+- API validation tests
+- Business workflow tests
+- Accounting calculation tests
+- Inventory consistency tests
+- Approval workflow tests
+- File access tests
+
+## Frontend Testing
+- Component tests
+- Form validation tests
+- Navigation tests
+- Permission-based UI tests
+- API error handling tests
+- Responsive layout tests
+
+## End-to-End Testing
+
+Test important real-world workflows from the user interface through Laravel and MySQL.
+
+Never consider a feature complete simply because the page renders.
+
+---
+
+# 19. Demo Data and Initial Setup
+
+Provide a complete demo environment.
+
+Include:
+- Demo tenant
+- Demo company
+- Multiple branches
+- Sample employees
+- Sample customers
+- Sample suppliers
+- Sample products
+- Sample inventory
+- Sample sales transactions
+- Sample purchase transactions
+- Sample accounting entries
+- Sample projects
+- Sample notifications
+- Sample approval workflows
+
+Create a secure initial setup process.
+
+Provide development-only demo credentials and clearly document them. Never use predictable demo passwords in production.
+
+---
+
+# 20. Deployment and Environment Configuration
+
+Prepare the system for local development, staging, and production deployment.
+
+Include:
+
+- Frontend environment configuration
+- Backend environment configuration
+- MySQL configuration
+- Database migrations
+- Database seeders
+- Queue configuration
+- Scheduler configuration
+- File storage configuration
+- CORS configuration
+- Secure authentication configuration
+- Production build instructions
+- Backup configuration
+- Deployment documentation
+
+Provide Docker configuration where practical.
+
+Do not commit real credentials, secret keys, or production environment files.
+
+---
+
+# 21. Documentation
+
+Create complete documentation covering:
+
+1. Project overview
+2. System architecture
+3. Installation instructions
+4. Frontend setup
+5. Backend setup
+6. Database setup
+7. Environment variables
+8. Authentication architecture
+9. Multi-tenancy architecture
+10. Module architecture
+11. Role and permission system
+12. API documentation
+13. Database ERD
+14. Business workflows
+15. Adding a new ERP module
+16. Adding custom fields
+17. Adding a new integration
+18. Testing instructions
+19. Deployment instructions
+20. Backup and recovery procedures
+
+A future developer must be able to understand the system and add modules without rewriting the existing architecture.
+
+---
+
+# 22. Development Strategy and Implementation Phases
+
+Build this project in clearly defined phases.
+
+Do not attempt to generate every ERP feature as one giant, unstructured implementation.
+
+## Phase 1 — Foundation
+- Project setup
+- Next.js configuration
+- Laravel configuration
+- MySQL connection
+- API architecture
+- Authentication
+- Tenant architecture
+- Company onboarding
+- Initial database structure
+
+## Phase 2 — Core Administration
+- Super Admin Panel
+- Tenant Admin Panel
+- User management
+- Role and permissions
+- Branch management
+- Department management
+- Module management
+- Company settings
+
+## Phase 3 — Core Business Modules
+- Dashboard
+- CRM
+- Product management
+- Sales
+- Purchasing
+- Inventory
+- Customer and supplier management
+
+## Phase 4 — Financial Modules
+- Accounting
+- Invoicing
+- Payments
+- Expenses
+- Tax configuration
+- Financial reporting
+
+## Phase 5 — Advanced ERP Modules
+- HRM
+- Payroll
+- Projects
+- Manufacturing
+- POS
+- Document management
+
+## Phase 6 — Universal Customization
+- Dynamic module activation
+- Custom fields
+- Custom forms
+- Custom statuses
+- Document numbering
+- Workflow engine
+- Localization
+- Branding
+
+## Phase 7 — Reporting and Integrations
+- Advanced analytics
+- Report builder
+- Exports
+- Notification providers
+- External integrations
+- Webhooks
+
+## Phase 8 — Testing and Production
+- Automated testing
+- Security review
+- Performance optimization
+- Bug fixing
+- Deployment configuration
+- Backup and recovery
+- Final documentation
+
+At the end of every phase, verify that previously implemented features continue to work.
+
+---
+
+# 23. Strict Development Instructions
+
+Follow these requirements throughout the project:
+
+1. Build a real, functional application, not just a visual mockup.
+2. Use the specified technology stack without replacing it with another framework.
+3. Keep Next.js and Laravel as separate applications.
+4. Use Laravel as the authoritative backend for business logic and permissions.
+5. Use MySQL as the primary relational database.
+6. Implement secure tenant isolation from the beginning.
+7. Build reusable components, services, modules, and workflows.
+8. Avoid hardcoded tenant IDs, business data, roles, currencies, and tax rules.
+9. Use configuration-driven behavior wherever appropriate.
+10. Do not create fake API integrations or pretend that unfinished functionality is working.
+11. Connect every implemented frontend feature to its real backend functionality.
+12. Do not use placeholder buttons for actions that are advertised as functional.
+13. Provide useful loading, validation, success, and error states.
+14. Use consistent coding standards and meaningful naming conventions.
+15. Keep business rules centralized in the backend.
+16. Protect sensitive operations with permissions and audit logs.
+17. Maintain data integrity across connected modules.
+18. Include automated tests for critical workflows.
+19. Update documentation as the architecture evolves.
+20. Do not silently skip requirements. Document any feature that cannot be completed in the current development phase.
+
+# 24. Final Expected Product
+
+The final product must be a professional, reusable, modular, multi-tenant ERP SaaS platform.
+
+A new business should be able to:
+
+1. Register or be onboarded by a platform administrator.
+2. Create its company profile.
+3. Configure its branches and departments.
+4. Select its business type.
+5. Activate the modules it requires.
+6. Configure its users, roles, and permissions.
+7. Customize its company settings and branding.
+8. Start managing its business through the ERP.
+9. Generate reports and monitor business performance.
+10. Expand its ERP functionality as its business grows.
+
+The most important architectural objective is:
+
+**Build one universal ERP foundation that can be adapted to different businesses through modular features, configuration, permissions, custom fields, and reusable workflows — without needing to rebuild the application for each new business.**
+
+Start by designing the architecture, database schema, module boundaries, and development roadmap. Then implement the system phase by phase, ensuring every completed feature is functional, tested, secure, and properly integrated.
