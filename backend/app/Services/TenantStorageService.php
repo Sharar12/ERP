@@ -30,3 +30,4 @@ class TenantStorageService
         return Storage::disk('local')->download($path);
     }
 }
+

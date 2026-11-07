@@ -38,8 +38,10 @@ class TenantIsolationTest extends TestCase
         app()->instance('currentTenant', $tenant);
 
         $branch = Branch::create(['name' => 'Auto Branch']);
+        $unit = \App\Models\BusinessUnit::create(['name' => 'Retail Division']);
 
         $this->assertSame($tenant->id, $branch->tenant_id);
+        $this->assertSame($tenant->id, $unit->tenant_id);
     }
 
     public function test_a_user_cannot_switch_to_a_tenant_they_do_not_belong_to(): void

@@ -39,3 +39,4 @@ trait BelongsToTenant
                      ->where('tenant_id', $tenantId);
     }
 }
+

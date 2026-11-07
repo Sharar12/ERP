@@ -52,6 +52,11 @@ class Tenant extends Model
         return $this->hasMany(Warehouse::class);
     }
 
+    public function businessUnits(): HasMany
+    {
+        return $this->hasMany(BusinessUnit::class);
+    }
+
     public function settings(): HasMany
     {
         return $this->hasMany(Setting::class);

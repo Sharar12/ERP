@@ -34,7 +34,7 @@
 - [✓] Create branch management
 - [✓] Create department management
 - [✓] Create warehouse management
-- [ ] Create business unit management
+- [✓] Create business unit management
 - [✓] Implement tenant-specific settings
 - [✓] Implement tenant-specific file storage permissions
 - [✓] Test cross-tenant data isolation
