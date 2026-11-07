@@ -1,11 +1,14 @@
 <?php
 
+use App\Http\Controllers\Api\V1\TenantController;
+use App\Http\Controllers\Api\V1\UserTenantController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
-    // Public routes (login, registration) will live here in Phase 3
-
-    Route::middleware('auth:sanctum')->group(function () {
-        // Protected routes will live here
+    // Authenticated routes
+    Route::middleware('auth')->group(function () {
+        Route::post('/tenants', [TenantController::class, 'store']);
+        Route::get('/me/tenants', [UserTenantController::class, 'index']);
+        Route::post('/me/switch-tenant', [UserTenantController::class, 'switch']);
     });
 });
