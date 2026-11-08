@@ -1,0 +1,121 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 4%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 4%;
+    --muted: 240 6% 97%;
+    --muted-foreground: 240 4% 46%;
+    --border: 240 6% 91%;
+    --primary: 240 10% 4%;       /* near-black — used for primary buttons */
+    --primary-foreground: 0 0% 100%;
+    --accent: 234 89% 60%;       /* indigo — used sparingly */
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 142 71% 40%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    --radius: 0.5rem;            /* 8px — tight, modern */
+  }
+
+  .dark {
+    --background: 240 10% 4%;
+    --foreground: 0 0% 98%;
+    --card: 240 8% 6%;
+    --card-foreground: 0 0% 98%;
+    --muted: 240 6% 12%;
+    --muted-foreground: 240 5% 65%;
+    --border: 240 6% 15%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 10% 4%;
+    --accent: 234 89% 65%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 63% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 142 60% 45%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 80% 55%;
+    --warning-foreground: 0 0% 100%;
+  }
+  * { @apply border-border; }
+  body { @apply bg-background text-foreground; font-feature-settings: "rlig" 1, "calt" 1; }
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { @apply bg-muted-foreground/30 rounded-full; }
+::-webkit-scrollbar-thumb:hover { @apply bg-muted-foreground/50; }
+
+
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  button, a, [role="button"] { -webkit-tap-highlight-color: transparent; }
+  *:focus-visible { outline: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer utilities {
+  .transition-smooth { transition: color .2s, background-color .2s, border-color .2s, box-shadow .2s, transform .2s, opacity .2s cubic-bezier(.4,0,.2,1); }
+  .hover-lift       { transition: transform .2s, box-shadow .2s; }
+  .hover-lift:hover { transform: translateY(-2px); box-shadow: 0 6px 20px -6px hsl(var(--foreground)/0.10); }
+  .hover-lift:active{ transform: translateY(0); box-shadow: none; }
+
+  .stagger-1 { animation-delay: 40ms; }
+  .stagger-2 { animation-delay: 80ms; }
+  .stagger-3 { animation-delay: 120ms; }
+  .stagger-4 { animation-delay: 160ms; }
+  .stagger-5 { animation-delay: 200ms; }
+  .stagger-6 { animation-delay: 240ms; }
+  .stagger-7 { animation-delay: 280ms; }
+  .stagger-8 { animation-delay: 320ms; }
+
+  /* Modern tech type utilities */
+  .text-label {
+    @apply text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground;
+  }
+  .text-mono-num {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+  .font-mono {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", monospace;
+  }
+
+  /* Subtle background textures — the "tech" signature */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, hsl(var(--border)) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--border)) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+  .bg-dots {
+    background-image: radial-gradient(hsl(var(--border)) 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+  .bg-grid-fade {
+    background-image:
+      linear-gradient(to right, hsl(var(--border)) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--border)) 1px, transparent 1px);
+    background-size: 32px 32px;
+    mask-image: radial-gradient(ellipse 60% 50% at 50% 0%, black 40%, transparent 90%);
+  }
+
+  /* Inset panel — grouped content block */
+  .inset {
+    @apply rounded-lg border border-border bg-muted/40;
+  }
+}

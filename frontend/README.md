@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Universal ERP — Frontend (Phase 1)
 
-## Getting Started
+Next.js + TypeScript + Tailwind CSS. **All data is mock** and lives under `src/mock-data/`. UI components consume data via `src/services/` — never directly from mock files.
 
-First, run the development server:
+## Running
 
 ```bash
+cd frontend
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000 → redirects to `/dashboard`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Mock → API migration map
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Concern | Mock (Phase 1) | API (Phase 3) |
+|---|---|---|
+| Data source | `src/mock-data/seed.ts` | Laravel `/api/v1/*` |
+| Provider | `src/services/mock/*` | `src/services/api/*` |
+| Config | `src/services/config/data-provider.ts` | flip `PROVIDER` |
+| Auth | `authService` in `src/services/index.ts` | Sanctum token flow |
 
-## Learn More
+Every mock file starts with a `MOCK`-prefixed comment describing the endpoint that will replace it.
 
-To learn more about Next.js, take a look at the following resources:
+## Searchable markers
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+grep -rn "MOCK" src/
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Phase 1 completion summary
 
-## Deploy on Vercel
+- ✅ Full layout (sidebar, topbar, breadcrumbs, org switcher, notifications, theme)
+- ✅ Reusable UI kit (button, input, select, textarea, field, card, badge, modal, empty state)
+- ✅ Universal DataTable (search, sort, pagination, column visibility, bulk actions)
+- ✅ Dashboard with KPIs, revenue & category charts, recent invoices, low-stock alerts
+- ✅ CRM Customers (full mock CRUD)
+- ✅ Sales Invoices (list + detail modal)
+- ✅ Purchases Suppliers + Purchase Orders
+- ✅ Inventory Products (full mock CRUD) + Warehouses
+- ✅ Finance Transactions
+- ✅ HR Employees (full mock CRUD)
+- ✅ Projects board
+- ✅ Reports catalogue
+- ✅ Module configuration (enable/disable, dependency-aware)
+- ✅ Organization profile
+- ✅ Login (mock auth)
+- ✅ Dark mode, responsive layouts
+- ✅ Service abstraction (contracts + mock impls + provider switch)
+- ✅ Centralized, interconnected mock data with all Phase-1 datasets
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Notes
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Datasets are session-scoped (refreshing the browser restores the seed).
+- Additional modules (Manufacturing, Quality, Assets, Helpdesk) have nav entries gated behind `MOCK_MODULES` and can be wired identically using the `mockCrud` helper.
