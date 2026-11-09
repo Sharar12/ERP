@@ -24,3 +24,7 @@ Thumbs.db
 .vscode/
 .idea/
 
+# Documentation & Project Plans (local only)
+docs/
+DOCS for Project Plan/
+
