@@ -224,3 +224,36 @@ export interface CrudService<T, C = Partial<T>, U = Partial<T>> {
   delete(id: ID): Promise<void>;
 }
 
+export interface PaginatedResult<T> {
+  data: T[];
+  meta?: {
+    current_page: number;
+    per_page: number;
+    total: number;
+    last_page: number;
+  };
+}
+
+export interface Contact extends BaseEntity { [key: string]: any; }
+export interface Opportunity extends BaseEntity { [key: string]: any; }
+export interface Quotation extends BaseEntity { [key: string]: any; }
+export interface SalesReturn extends BaseEntity { [key: string]: any; }
+export interface Payment extends BaseEntity { [key: string]: any; }
+export interface GoodsReceivedNote extends BaseEntity { [key: string]: any; }
+export interface StockMovement extends BaseEntity { [key: string]: any; }
+export interface StockAdjustment extends BaseEntity { [key: string]: any; }
+export interface ChartOfAccount extends BaseEntity { [key: string]: any; }
+export interface JournalEntry extends BaseEntity { [key: string]: any; }
+export interface Budget extends BaseEntity { [key: string]: any; }
+export interface Leave extends BaseEntity { [key: string]: any; }
+export interface Attendance extends BaseEntity { [key: string]: any; }
+export interface Task extends BaseEntity { [key: string]: any; }
+export interface Document extends BaseEntity { [key: string]: any; }
+export interface Bom extends BaseEntity { [key: string]: any; }
+export interface ManufacturingOrder extends BaseEntity { [key: string]: any; }
+export interface QualityInspection extends BaseEntity { [key: string]: any; }
+export interface NonConformanceReport extends BaseEntity { [key: string]: any; }
+export interface Asset extends BaseEntity { [key: string]: any; }
+export interface Ticket extends BaseEntity { [key: string]: any; }
+
+

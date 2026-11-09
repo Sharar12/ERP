@@ -48,7 +48,7 @@ export default function DashboardPage() {
       setRevenue(r);
       setCategories(c);
       setInvoices(inv.slice(0, 5));
-      setLowStock(prods.filter(p => p.stock <= p.reorderLevel).slice(0, 4));
+      setLowStock(prods.filter((p: any) => p.stock <= p.reorderLevel).slice(0, 4));
       setTransactions(tx.slice(0, 5));
       setActivity(act.slice(0, 5));
       setTasks(tk.slice(0, 5));

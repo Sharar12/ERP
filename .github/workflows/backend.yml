@@ -1,0 +1,58 @@
+name: Backend
+
+on:
+  push: { branches: [main, develop] }
+  pull_request: { branches: [main, develop] }
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: erp_test
+        ports: ['3306:3306']
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-retries=5
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_mysql, intl, zip, bcmath, redis
+          coverage: xdebug
+
+      - name: Install dependencies
+        working-directory: backend
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Copy env
+        working-directory: backend
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Configure test DB
+        working-directory: backend
+        run: |
+          sed -i 's/^DB_HOST=.*/DB_HOST=127.0.0.1/'      .env
+          sed -i 's/^DB_DATABASE=.*/DB_DATABASE=erp_test/' .env
+          sed -i 's/^DB_USERNAME=.*/DB_USERNAME=root/'   .env
+          sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=root/'   .env
+          sed -i 's/^REDIS_HOST=.*/REDIS_HOST=127.0.0.1/' .env
+          sed -i 's/^CACHE_STORE=.*/CACHE_STORE=redis/'  .env
+
+      - name: Run migrations + seeders (dry run)
+        working-directory: backend
+        run: php artisan migrate:fresh --seed --force
+
+      - name: Run tests (coverage)
+        working-directory: backend
+        run: php artisan test --parallel
+

@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Models\Tenant;
-use App\Models\Branch;
-use App\Models\User;
+use App\Models\Auth\{User, Role, Permission};
+use App\Models\Core\{Organization, Branch};
+use App\Models\Crm\Customer;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -12,76 +12,49 @@ class TenantIsolationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_a_tenant_cannot_see_another_tenants_branches(): void
+    public function test_an_organization_cannot_see_another_organizations_branches(): void
     {
-        $tenantA = Tenant::create(['name' => 'Alpha', 'slug' => 'alpha']);
-        $tenantB = Tenant::create(['name' => 'Beta', 'slug' => 'beta']);
+        $orgA = Organization::factory()->create();
+        $orgB = Organization::factory()->create();
 
-        app()->instance('currentTenant', $tenantA);
-        Branch::create(['name' => 'Alpha Branch']);
+        $branchA = Branch::create(['organization_id' => $orgA->id, 'name' => 'Branch A', 'code' => 'BR-A', 'is_active' => true]);
+        $branchB = Branch::create(['organization_id' => $orgB->id, 'name' => 'Branch B', 'code' => 'BR-B', 'is_active' => true]);
 
-        app()->instance('currentTenant', $tenantB);
-        Branch::create(['name' => 'Beta Branch']);
+        $userA = User::factory()->create(['organization_id' => $orgA->id, 'status' => 'active']);
+        $this->actingAs($userA, 'sanctum');
 
-        app()->instance('currentTenant', $tenantA);
-        $this->assertCount(1, Branch::all());
-        $this->assertSame('Alpha Branch', Branch::first()->name);
-
-        app()->instance('currentTenant', $tenantB);
-        $this->assertCount(1, Branch::all());
-        $this->assertSame('Beta Branch', Branch::first()->name);
+        $branches = Branch::all();
+        $this->assertCount(1, $branches);
+        $this->assertSame('Branch A', $branches->first()->name);
     }
 
-    public function test_creating_a_model_automatically_sets_tenant_id(): void
+    public function test_creating_a_model_automatically_sets_organization_id(): void
     {
-        $tenant = Tenant::create(['name' => 'Gamma', 'slug' => 'gamma']);
-        app()->instance('currentTenant', $tenant);
+        $org = Organization::factory()->create();
+        $user = User::factory()->create(['organization_id' => $org->id, 'status' => 'active']);
+        $this->actingAs($user, 'sanctum');
 
-        $branch = Branch::create(['name' => 'Auto Branch']);
-        $unit = \App\Models\BusinessUnit::create(['name' => 'Retail Division']);
+        $branch = Branch::create(['name' => 'Auto Branch', 'code' => 'BR-AUTO']);
 
-        $this->assertSame($tenant->id, $branch->tenant_id);
-        $this->assertSame($tenant->id, $unit->tenant_id);
+        $this->assertSame($org->id, $branch->organization_id);
     }
 
-    public function test_a_user_cannot_switch_to_a_tenant_they_do_not_belong_to(): void
+    public function test_user_cannot_access_other_organization_customer(): void
     {
-        $user = User::factory()->create();
-        $tenant = Tenant::create(['name' => 'Delta', 'slug' => 'delta']);
+        $orgA = Organization::factory()->create();
+        $orgB = Organization::factory()->create();
 
-        $response = $this->actingAs($user)->postJson('/api/v1/me/switch-tenant', [
-            'tenant_id' => $tenant->id,
-        ]);
+        $perm = Permission::create(['name' => 'View CRM', 'slug' => 'crm.view', 'module' => 'crm', 'group' => 'CRM']);
+        $role = Role::create(['organization_id' => $orgA->id, 'name' => 'Admin', 'slug' => 'admin']);
+        $role->permissions()->attach($perm->id);
 
-        $response->assertStatus(403);
-    }
+        $userA = User::factory()->create(['organization_id' => $orgA->id, 'status' => 'active']);
+        $userA->roles()->attach($role->id);
 
-    public function test_a_user_can_switch_to_a_tenant_they_belong_to(): void
-    {
-        $user = User::factory()->create();
-        $tenant = Tenant::create(['name' => 'Epsilon', 'slug' => 'epsilon']);
-        $tenant->users()->attach($user->id, ['is_owner' => true]);
+        $foreignCustomer = Customer::factory()->create(['organization_id' => $orgB->id]);
 
-        $response = $this->actingAs($user)->postJson('/api/v1/me/switch-tenant', [
-            'tenant_id' => $tenant->id,
-        ]);
-
-        $response->assertStatus(200);
-        $response->assertJson(['status' => 'success']);
-    }
-
-    public function test_a_user_can_list_their_tenants(): void
-    {
-        $user = User::factory()->create();
-        $tenant1 = Tenant::create(['name' => 'Company One', 'slug' => 'company-one']);
-        $tenant2 = Tenant::create(['name' => 'Company Two', 'slug' => 'company-two']);
-
-        $tenant1->users()->attach($user->id, ['is_owner' => true]);
-        $tenant2->users()->attach($user->id, ['is_owner' => false]);
-
-        $response = $this->actingAs($user)->getJson('/api/v1/me/tenants');
-
-        $response->assertStatus(200);
-        $response->assertJsonCount(2, 'data');
+        $this->actingAs($userA, 'sanctum')
+            ->getJson("/api/v1/crm/customers/{$foreignCustomer->id}")
+            ->assertStatus(404);
     }
 }
