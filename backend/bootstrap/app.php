@@ -24,8 +24,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'branch.access'   => EnsureBranchAccess::class,
             'permission'      => CheckPermission::class,
         ]);
+        $middleware->validateCsrfTokens(except: [
+            'api/*',
+        ]);
         $middleware->api(prepend: [
-            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             'throttle:api',
         ]);
     })

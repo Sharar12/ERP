@@ -16,26 +16,59 @@ class SalesSeeder extends Seeder
             $users = User::where('organization_id', $org->id)->get();
 
             // Phase 1 mock: 12 invoices
-            Invoice::factory()->count(12)->create(['organization_id' => $org->id]);
+            Invoice::factory()->count(12)->create([
+                'organization_id' => $org->id,
+                'customer_id' => fn () => $customers->random()->id,
+            ]);
 
             // 4 sales orders
-            SalesOrder::factory()->count(4)->create([
-                'organization_id' => $org->id,
-                'customer_id' => fn () => $customers->random()->id,
-                'sales_rep_id' => fn () => $users->random()->id,
-            ]);
+            for ($i = 0; $i < 4; $i++) {
+                $sub = fake()->randomFloat(2, 500, 20000);
+                $tax = round($sub * 0.1, 2);
+                SalesOrder::create([
+                    'organization_id' => $org->id,
+                    'customer_id' => $customers->random()->id,
+                    'sales_rep_id' => $users->isNotEmpty() ? $users->random()->id : null,
+                    'number' => 'SO-' . fake()->unique()->numerify('#####'),
+                    'order_date' => now()->subDays(fake()->numberBetween(1, 30)),
+                    'expected_delivery' => now()->addDays(fake()->numberBetween(5, 20)),
+                    'subtotal' => $sub,
+                    'tax_total' => $tax,
+                    'total' => $sub + $tax,
+                    'status' => fake()->randomElement(['draft', 'confirmed', 'processing', 'delivered']),
+                ]);
+            }
 
             // 3 quotations
-            Quotation::factory()->count(3)->create([
-                'organization_id' => $org->id,
-                'customer_id' => fn () => $customers->random()->id,
-            ]);
+            for ($i = 0; $i < 3; $i++) {
+                $sub = fake()->randomFloat(2, 500, 15000);
+                $tax = round($sub * 0.1, 2);
+                Quotation::create([
+                    'organization_id' => $org->id,
+                    'customer_id' => $customers->random()->id,
+                    'sales_rep_id' => $users->isNotEmpty() ? $users->random()->id : null,
+                    'number' => 'QT-' . fake()->unique()->numerify('#####'),
+                    'issue_date' => now()->subDays(fake()->numberBetween(1, 20)),
+                    'valid_until' => now()->addDays(fake()->numberBetween(10, 30)),
+                    'subtotal' => $sub,
+                    'tax_total' => $tax,
+                    'total' => $sub + $tax,
+                    'status' => fake()->randomElement(['draft', 'sent', 'accepted']),
+                ]);
+            }
 
             // 2 sales returns
-            SalesReturn::factory()->count(2)->create([
-                'organization_id' => $org->id,
-                'customer_id' => fn () => $customers->random()->id,
-            ]);
+            for ($i = 0; $i < 2; $i++) {
+                SalesReturn::create([
+                    'organization_id' => $org->id,
+                    'customer_id' => $customers->random()->id,
+                    'number' => 'RET-' . fake()->unique()->numerify('#####'),
+                    'return_date' => now()->subDays(fake()->numberBetween(1, 15)),
+                    'total' => fake()->randomFloat(2, 50, 1000),
+                    'status' => fake()->randomElement(['draft', 'approved', 'received']),
+                    'reason' => 'Defective or incorrect item',
+                ]);
+            }
 
             // 3 payments
             foreach (Invoice::where('organization_id', $org->id)->take(3)->get() as $inv) {

@@ -1,3 +1,6 @@
+/* File Location: frontend/src/app/globals.css */
+/* Purpose: Global Design System & Theme CSS Variables (Light/Dark mode) */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

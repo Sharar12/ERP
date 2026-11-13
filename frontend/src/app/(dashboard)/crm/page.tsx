@@ -1,24 +1,39 @@
 "use client";
+import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { MOCK_CUSTOMERS, MOCK_LEADS } from "@/mock-data/seed";
+import { customerService, leadService } from "@/services";
 import { formatCurrency } from "@/lib/utils";
 import Link from "next/link";
-import { Users, Target, TrendingUp, Award } from "lucide-react";
+import type { Customer, Lead } from "@/types";
 
 export default function CrmDashboardPage() {
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [leads, setLeads] = useState<Lead[]>([]);
+
+  useEffect(() => {
+    customerService.getAll().then(setCustomers).catch(() => setCustomers([]));
+    leadService.getAll().then(setLeads).catch(() => setLeads([]));
+  }, []);
+
   const pipeline = ["new", "contacted", "qualified", "proposal", "won", "lost"];
-  const byStage = pipeline.map(s => ({ stage: s, count: MOCK_LEADS.filter(l => l.status === s).length, value: MOCK_LEADS.filter(l => l.status === s).reduce((a, b) => a + b.value, 0) }));
+  const byStage = pipeline.map(s => ({
+    stage: s,
+    count: leads.filter(l => l.status === s).length,
+    value: leads.filter(l => l.status === s).reduce((a, b) => a + (Number(b.value ?? (b as any).estimated_value) || 0), 0)
+  }));
+
+  const totalValue = leads.reduce((a, b) => a + (Number(b.value ?? (b as any).estimated_value) || 0), 0);
+  const wonValue = leads.filter(l => l.status === "won").reduce((a, b) => a + (Number(b.value ?? (b as any).estimated_value) || 0), 0);
 
   return (
     <div>
       <PageHeader title="CRM" description="Pipeline, customers and revenue." />
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <Card><CardContent><div className="text-xs text-muted-foreground">Total Customers</div><div className="mt-1 text-2xl font-semibold">{MOCK_CUSTOMERS.length}</div></CardContent></Card>
-        <Card><CardContent><div className="text-xs text-muted-foreground">Open Leads</div><div className="mt-1 text-2xl font-semibold">{MOCK_LEADS.filter(l => !["won", "lost"].includes(l.status)).length}</div></CardContent></Card>
-        <Card><CardContent><div className="text-xs text-muted-foreground">Pipeline Value</div><div className="mt-1 text-2xl font-semibold">{formatCurrency(MOCK_LEADS.reduce((a, b) => a + b.value, 0))}</div></CardContent></Card>
-        <Card><CardContent><div className="text-xs text-muted-foreground">Won This Q</div><div className="mt-1 text-2xl font-semibold">{formatCurrency(MOCK_LEADS.filter(l => l.status === "won").reduce((a, b) => a + b.value, 0))}</div></CardContent></Card>
+        <Card><CardContent><div className="text-xs text-muted-foreground">Total Customers</div><div className="mt-1 text-2xl font-semibold">{customers.length}</div></CardContent></Card>
+        <Card><CardContent><div className="text-xs text-muted-foreground">Open Leads</div><div className="mt-1 text-2xl font-semibold">{leads.filter(l => !["won", "lost"].includes(l.status)).length}</div></CardContent></Card>
+        <Card><CardContent><div className="text-xs text-muted-foreground">Pipeline Value</div><div className="mt-1 text-2xl font-semibold">{formatCurrency(totalValue)}</div></CardContent></Card>
+        <Card><CardContent><div className="text-xs text-muted-foreground">Won This Q</div><div className="mt-1 text-2xl font-semibold">{formatCurrency(wonValue)}</div></CardContent></Card>
       </div>
 
       <div className="mt-5 grid gap-4 lg:grid-cols-3">
@@ -49,4 +64,3 @@ export default function CrmDashboardPage() {
     </div>
   );
 }
-

@@ -7,12 +7,15 @@ import type { Column } from "@/components/tables/data-table";
 import { assetMaintenanceService } from "@/services";
 
 const columns: Column<any>[] = [
-  { key: "assetTag", header: "Asset Tag", sortValue: r => r.assetTag, cell: r => <span className="font-medium">{r.assetTag}</span> },
-  { key: "title", header: "Maintenance Task", sortValue: r => r.title, cell: r => r.title },
-  { key: "type", header: "Type", cell: r => <span className="capitalize">{r.type}</span> },
-  { key: "scheduledDate", header: "Scheduled Date", sortValue: r => r.scheduledDate, cell: r => r.scheduledDate },
-  { key: "technician", header: "Technician", cell: r => r.technician },
-  { key: "status", header: "Status", sortValue: r => r.status, cell: r => <Badge tone={statusTone(r.status)}>{r.status.replace("_", " ")}</Badge> },
+  { key: "assetTag", header: "Asset", sortValue: r => r.asset?.name ?? r.asset?.asset_tag ?? r.assetTag, cell: r => <span className="font-medium">{r.asset?.name ?? r.asset?.asset_tag ?? r.assetTag ?? `Asset #${r.asset_id ?? "—"}`}</span> },
+  { key: "title", header: "Maintenance Task", sortValue: r => r.description ?? r.title, cell: r => r.description ?? r.title ?? "—" },
+  { key: "type", header: "Type", cell: r => <span className="capitalize">{r.type ?? "—"}</span> },
+  { key: "scheduledDate", header: "Date", sortValue: r => r.date ?? r.scheduledDate, cell: r => r.date ?? r.scheduledDate ?? "—" },
+  { key: "technician", header: "Technician", cell: r => r.performer?.name ?? r.technician ?? "—" },
+  { key: "status", header: "Status", sortValue: r => r.status ?? "completed", cell: r => {
+    const s = r.status || "completed";
+    return <Badge tone={statusTone(s)}>{s.replace("_", " ")}</Badge>;
+  }},
 ];
 
 export default function AssetMaintenancePage() {

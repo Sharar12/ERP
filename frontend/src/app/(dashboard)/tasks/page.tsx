@@ -7,14 +7,14 @@ import { Badge, statusTone } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs } from "@/components/ui/tabs";
 import { DataTable, type Column } from "@/components/tables/data-table";
-import { taskService } from "@/services/mock/extended";
+import { taskService } from "@/services";
 import { formatDate } from "@/lib/utils";
 
 const columns: Column<any>[] = [
   { key: "title", header: "Task", cell: r => <span className="font-medium">{r.title}</span> },
   { key: "assignee", header: "Assignee", cell: r => r.assignee },
   { key: "priority", header: "Priority", cell: r => <Badge tone={r.priority === "high" ? "danger" : r.priority === "medium" ? "warning" : "info"}>{r.priority}</Badge> },
-  { key: "status", header: "Status", cell: r => <Badge tone={statusTone(r.status)}>{r.status.replace("_", " ")}</Badge> },
+  { key: "status", header: "Status", cell: r => <Badge tone={statusTone(r.status)}>{(r.status || "todo").replace("_", " ")}</Badge> },
   { key: "due", header: "Due", sortValue: r => r.dueDate, cell: r => r.dueDate },
 ];
 

@@ -2,7 +2,7 @@
 import { CrudPage } from "@/components/common/crud-page";
 import { Input } from "@/components/ui/input";
 import { Field } from "@/components/ui/field";
-import { contactService } from "@/services/mock/extended";
+import { contactService } from "@/services";
 import type { Column } from "@/components/tables/data-table";
 
 const columns: Column<any>[] = [

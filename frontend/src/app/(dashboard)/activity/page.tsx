@@ -6,11 +6,11 @@ import type { Column } from "@/components/tables/data-table";
 import { activityService } from "@/services";
 
 const columns: Column<any>[] = [
-  { key: "user", header: "User", sortValue: r => r.user, cell: r => <span className="font-medium">{r.user}</span> },
-  { key: "action", header: "Action", sortValue: r => r.action, cell: r => r.action },
-  { key: "target", header: "Target", sortValue: r => r.target, cell: r => r.target },
-  { key: "timestamp", header: "Timestamp", sortValue: r => r.timestamp, cell: r => r.timestamp ? new Date(r.timestamp).toLocaleString() : "—" },
-  { key: "ipAddress", header: "IP Address", cell: r => r.ipAddress ?? "127.0.0.1" },
+  { key: "user", header: "User", sortValue: r => typeof r.user === "object" ? r.user?.name : r.user, cell: r => <span className="font-medium">{typeof r.user === "object" ? (r.user?.name ?? "System") : (r.user ?? "System")}</span> },
+  { key: "action", header: "Action", sortValue: r => r.event ?? r.action, cell: r => <span className="capitalize">{r.event ?? r.action ?? "—"}</span> },
+  { key: "target", header: "Description / Target", sortValue: r => r.description ?? r.target, cell: r => r.description ?? r.target ?? "—" },
+  { key: "timestamp", header: "Timestamp", sortValue: r => r.created_at ?? r.timestamp, cell: r => r.created_at ?? r.timestamp ? new Date(r.created_at ?? r.timestamp).toLocaleString() : "—" },
+  { key: "ipAddress", header: "IP Address", cell: r => r.ip_address ?? r.ipAddress ?? "127.0.0.1" },
 ];
 
 export default function ActivityLogPage() {

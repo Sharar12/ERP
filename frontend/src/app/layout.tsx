@@ -1,3 +1,6 @@
+// File Location: frontend/src/app/layout.tsx
+// Purpose: Root Website HTML Layout, Theme Provider, and Global Font Injection
+
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/layout/theme-provider";

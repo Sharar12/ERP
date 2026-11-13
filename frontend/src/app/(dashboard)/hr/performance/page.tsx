@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/layout/page-header";
 import { DataTable, type Column } from "@/components/tables/data-table";
 import { Badge, statusTone } from "@/components/ui/badge";
-import { reviewService } from "@/services/mock/extended";
+import { reviewService } from "@/services";
 
 const columns: Column<any>[] = [
   { key: "name", header: "Employee", cell: r => <span className="font-medium">{r.employeeName}</span> },

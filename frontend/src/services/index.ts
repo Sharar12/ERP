@@ -1,75 +1,83 @@
 /* =========================================================================
  * PUBLIC SERVICE FACADE
- * UI components import from HERE, never from mock-data directly.
- * Branches on DATA_PROVIDER ("mock" | "api") while preserving the same contract.
+ * UI components import from HERE. All services connect directly to the
+ * real backend Laravel REST API endpoints (/api/v1/*).
  * ========================================================================= */
-import { DATA_PROVIDER } from "./config/data-provider";
+import * as api from './api';
+import * as apiAuth from './api/auth.api-service';
 
-// Mock Services
-import {
-  customerMock,
-  leadMock,
-  invoiceMock,
-  salesOrderMock,
-  supplierMock,
-  purchaseOrderMock,
-  productMock,
-  warehouseMock,
-  transactionMock,
-  employeeMock,
-  projectMock,
-  notificationMock,
-  moduleMock,
-  dashboardMock,
-} from "./mock";
+export const customerService = api.customerApi;
+export const leadService = api.leadApi;
+export const contactService = api.contactApi;
+export const opportunityService = api.opportunityApi;
 
-// API Services
-import {
-  customerApi,
-  leadApi,
-  invoiceApi,
-  salesOrderApi,
-  supplierApi,
-  purchaseOrderApi,
-  productApi,
-  warehouseApi,
-  transactionApi,
-  employeeApi,
-  projectApi,
-  notificationApi,
-  moduleApi,
-  dashboardApi,
-} from "./api";
+export const invoiceService = api.invoiceApi;
+export const salesOrderService = api.salesOrderApi;
+export const quotationService = api.quotationApi;
+export const salesReturnService = api.salesReturnApi;
+export const customerPaymentService = api.customerPaymentApi;
+export const salesTargetService = api.salesTargetApi;
 
-import * as apiAuth from "./api/auth.api-service";
+export const supplierService = api.supplierApi;
+export const purchaseOrderService = api.purchaseOrderApi;
+export const purchaseRequestService = api.purchaseRequestApi;
+export const rfqService = api.rfqApi;
+export const grnService = api.grnApi;
+export const supplierPaymentService = api.supplierPaymentApi;
 
-const isApi = DATA_PROVIDER === "api";
+export const productService = api.productApi;
+export const warehouseService = api.warehouseApi;
+export const stockTransferService = api.stockTransferApi;
+export const stockAdjustmentService = api.stockAdjustmentApi;
+export const stockMovementService = api.stockMovementApi;
+export const batchService = api.batchApi;
 
-export const customerService = isApi ? customerApi : customerMock;
-export const leadService = isApi ? leadApi : leadMock;
-export const invoiceService = isApi ? invoiceApi : invoiceMock;
-export const salesOrderService = isApi ? salesOrderApi : salesOrderMock;
-export const supplierService = isApi ? supplierApi : supplierMock;
-export const purchaseOrderService = isApi ? purchaseOrderApi : purchaseOrderMock;
-export const productService = isApi ? productApi : productMock;
-export const warehouseService = isApi ? warehouseApi : warehouseMock;
-export const transactionService = isApi ? transactionApi : transactionMock;
-export const employeeService = isApi ? employeeApi : employeeMock;
-export const projectService = isApi ? projectApi : projectMock;
-export const notificationService = isApi ? notificationApi : notificationMock;
-export const moduleService = isApi ? moduleApi : moduleMock;
-export const dashboardService = isApi ? dashboardApi : dashboardMock;
+export const transactionService = api.transactionApi;
+export const coaService = api.coaApi;
+export const journalService = api.journalApi;
+export const bankAccountService = api.bankAccountApi;
+export const budgetService = api.budgetApi;
 
-export * from "./mock/extended";
+export const employeeService = api.employeeApi;
+export const attendanceService = api.attendanceApi;
+export const leaveService = api.leaveApi;
+export const shiftService = api.shiftApi;
+export const payrollService = api.payrollApi;
+export const jobService = api.jobApi;
+export const reviewService = api.reviewApi;
 
-export const authService = isApi
-  ? apiAuth
-  : {
-      async login(email: string, _password: string) {
-        return { user: { id: "u_001", email, name: "Sarah Chen", role: "Super Admin" }, token: "mock_token" };
-      },
-      async logout() { return; },
-      async me() {
-        return { id: "u_001", email: "sarah@acme.test", name: "Sarah Chen", role: "Super Admin" };
-      },
-    };
+export const projectService = api.projectApi;
+export const milestoneService = api.milestoneApi;
+export const timeEntryService = api.timeEntryApi;
+export const taskService = api.taskApi;
+
+export const documentService = api.documentApi;
+
+export const bomService = api.bomApi;
+export const mfgOrderService = api.mfgOrderApi;
+export const workCenterService = api.workCenterApi;
+
+export const inspectionService = api.inspectionApi;
+export const ncrService = api.ncrApi;
+
+export const assetService = api.assetApi;
+export const assetMaintenanceService = api.assetMaintenanceApi;
+
+export const ticketService = api.ticketApi;
+export const kbService = api.kbApi;
+
+export const announcementService = api.announcementApi;
+export const activityService = api.activityApi;
+export const departmentService = api.departmentApi;
+export const locationService = api.locationApi;
+export const loginHistoryService = api.loginHistoryApi;
+
+export const userService = api.userApi;
+export const roleService = api.roleApi;
+export const organizationService = api.organizationApi;
+
+export const notificationService = api.notificationApi;
+export const moduleService = api.moduleApi;
+export const dashboardService = api.dashboardApi;
+
+export const authService = apiAuth;

@@ -6,8 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs } from "@/components/ui/tabs";
 import { Badge, statusTone } from "@/components/ui/badge";
 import { DataTable, type Column } from "@/components/tables/data-table";
-import { projectService } from "@/services";
-import { taskService, milestoneService, timeEntryService } from "@/services/mock/extended";
+import { projectService, taskService, milestoneService, timeEntryService } from "@/services";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Project } from "@/types";
 

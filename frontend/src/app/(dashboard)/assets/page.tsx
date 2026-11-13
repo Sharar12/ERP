@@ -13,7 +13,7 @@ const columns: Column<any>[] = [
   { key: "category", header: "Category", sortValue: r => r.category, cell: r => r.category },
   { key: "purchaseCost", header: "Cost", sortValue: r => r.purchaseCost, cell: r => formatCurrency(r.purchaseCost) },
   { key: "location", header: "Location", cell: r => r.location },
-  { key: "status", header: "Status", sortValue: r => r.status, cell: r => <Badge tone={statusTone(r.status)}>{r.status.replace("_", " ")}</Badge> },
+  { key: "status", header: "Status", sortValue: r => r.status, cell: r => <Badge tone={statusTone(r.status)}>{(r.status || "active").replace("_", " ")}</Badge> },
 ];
 
 export default function AssetsPage() {

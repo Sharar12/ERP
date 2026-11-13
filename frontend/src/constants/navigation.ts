@@ -187,5 +187,4 @@ export const NAV_ITEMS: NavItem[] = [
       { label: "Roles & Permissions", href: "/roles" },
     ],
   },
-  { label: "Settings", href: "/settings/organization", icon: Settings },
 ];

@@ -11,10 +11,21 @@ class ModuleController extends Controller
     public function index(Request $request)
     {
         $orgId = $request->user()->organization_id;
-        $modules = Module::all()->map(function ($m) use ($orgId) {
+        $modules = Module::with('dependencies')->get()->map(function ($m) use ($orgId) {
             $orgMod = OrganizationModule::where('organization_id', $orgId)->where('module_id', $m->id)->first();
-            $m->is_enabled = $orgMod ? (bool)$orgMod->enabled : (bool)$m->is_core;
-            return $m;
+            $enabled = $orgMod ? (bool)$orgMod->enabled : (bool)$m->is_core;
+            return [
+                'id' => $m->id,
+                'key' => $m->key,
+                'name' => $m->name,
+                'icon' => $m->icon ?? 'Layers',
+                'category' => $m->category ?? 'General',
+                'description' => $m->description ?? '',
+                'enabled' => $enabled,
+                'is_core' => (bool)$m->is_core,
+                'defaultEnabled' => (bool)$m->is_core,
+                'dependencies' => $m->dependencies->pluck('name')->all(),
+            ];
         });
         return ApiResponse::success($modules);
     }

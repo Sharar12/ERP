@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { DataTable, type Column } from "@/components/tables/data-table";
 import { Badge, statusTone } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { leaveService } from "@/services/mock/extended";
+import { leaveService } from "@/services";
 import { formatDate } from "@/lib/utils";
 import { useToast } from "@/components/ui/toast";
 

@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MOCK_ROLES } from "@/mock-data/seed";
-import { MOCK_MODULES } from "@/mock-data/seed";
+import { roleService } from "@/services";
 import { useToast } from "@/components/ui/toast";
 
 const ACTIONS = ["read", "create", "update", "delete", "export"];
@@ -27,60 +26,62 @@ export default function RoleDetailPage() {
   const toast = useToast();
 
   useEffect(() => {
-    const r = MOCK_ROLES.find(x => x.id === params.id);
-    if (r) { setRole(r); setSelected(new Set(r.permissions)); }
+    roleService.getById(params.id as string).then(r => {
+      if (r) {
+        setRole(r);
+        const perms = (r.permissions ?? []).map((p: any) => typeof p === 'string' ? p : p.slug ?? p.name);
+        setSelected(new Set(perms));
+      }
+    });
   }, [params.id]);
 
   if (!role) return null;
   const toggle = (key: string) => {
-    const n = new Set(selected);
-    n.has(key) ? n.delete(key) : n.add(key);
-    setSelected(n);
+    const next = new Set(selected);
+    if (next.has(key)) next.delete(key); else next.add(key);
+    setSelected(next);
   };
-  const save = () => {
-    /* MOCK CRUD — API REPLACEMENT: PATCH /api/v1/roles/{id}/permissions */
-    toast.push("Permissions saved", "success");
+  const save = async () => {
+    try {
+      await roleService.update(params.id as string, { permissions: Array.from(selected) } as any);
+      toast.push("Permissions saved", "success");
+    } catch (e: any) {
+      toast.push(e.message || "Failed to save permissions", "error");
+    }
   };
 
   return (
     <div>
-      <PageHeader title={`Permissions: ${role.name}`} description={role.description}
-        actions={<Button onClick={save}>Save changes</Button>} />
-      <Card>
-        <CardContent className="space-y-4">
-          {MOCK_MODULES.filter(m => PAGES[m.key]).map(mod => (
-            <div key={mod.key} className="rounded-lg border border-border p-3">
-              <div className="mb-2 flex items-center justify-between">
-                <div className="text-sm font-medium capitalize">{mod.name}</div>
-                <button onClick={() => {
-                  const n = new Set(selected);
-                  const all = PAGES[mod.key].flatMap(p => ACTIONS.map(a => `${mod.key}.${p}.${a}`));
-                  const hasAll = all.every(k => n.has(k));
-                  all.forEach(k => hasAll ? n.delete(k) : n.add(k));
-                  setSelected(n);
-                }} className="text-xs text-accent hover:underline">Toggle all</button>
-              </div>
-              <div className="space-y-1">
-                {PAGES[mod.key].map(page => (
-                  <div key={page} className="flex items-center gap-2">
-                    <div className="w-28 text-xs">{page}</div>
-                    {ACTIONS.map(a => {
-                      const key = `${mod.key}.${page}.${a}`;
-                      return (
-                        <label key={a} className="flex cursor-pointer items-center gap-1 text-xs">
-                          <input type="checkbox" checked={selected.has(key)} onChange={() => toggle(key)} />
-                          {a}
-                        </label>
-                      );
-                    })}
+      <PageHeader title={`Role: ${role.name}`} description={role.description}
+        actions={<Button onClick={save}>Save Permissions</Button>} />
+      <div className="space-y-4">
+        {Object.entries(PAGES).map(([mod, pages]) => (
+          <Card key={mod}>
+            <CardContent>
+              <div className="font-semibold capitalize">{mod}</div>
+              <div className="mt-2 space-y-2">
+                {pages.map(page => (
+                  <div key={page} className="flex items-center justify-between border-b border-border py-2 text-sm last:border-0">
+                    <span className="capitalize">{page}</span>
+                    <div className="flex gap-2">
+                      {ACTIONS.map(act => {
+                        const key = `${mod}.${page}.${act}`;
+                        const on = selected.has(key);
+                        return (
+                          <button key={act} type="button" onClick={() => toggle(key)}
+                            className={`rounded px-2 py-0.5 text-xs font-medium transition-colors ${on ? "bg-accent text-accent-foreground" : "bg-muted text-muted-foreground"}`}>
+                            {act}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
                 ))}
               </div>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }
-

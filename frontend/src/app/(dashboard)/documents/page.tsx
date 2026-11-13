@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/layout/page-header";
 import { DataTable, type Column } from "@/components/tables/data-table";
-import { documentService } from "@/services/mock/extended";
+import { documentService } from "@/services";
 import { FileUpload } from "@/components/ui/file-upload";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";

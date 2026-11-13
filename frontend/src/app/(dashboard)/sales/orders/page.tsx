@@ -8,10 +8,10 @@ import { salesOrderService } from "@/services";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { SalesOrder } from "@/types";
 
-const columns: Column<SalesOrder>[] = [
+const columns: Column<any>[] = [
   { key: "number", header: "SO", sortValue: r => r.number, cell: r => <span className="font-medium">{r.number}</span> },
-  { key: "customer", header: "Customer", sortValue: r => r.customerName, cell: r => r.customerName },
-  { key: "date", header: "Date", sortValue: r => r.orderDate, cell: r => formatDate(r.orderDate) },
+  { key: "customer", header: "Customer", sortValue: r => r.customer?.name ?? r.customerName, cell: r => r.customer?.name ?? r.customerName ?? "—" },
+  { key: "date", header: "Date", sortValue: r => r.order_date ?? r.orderDate ?? r.date, cell: r => formatDate(r.order_date ?? r.orderDate ?? r.date) },
   { key: "total", header: "Total", sortValue: r => r.total, cell: r => formatCurrency(r.total) },
   { key: "status", header: "Status", cell: r => <Badge tone={statusTone(r.status)}>{r.status}</Badge> },
 ];

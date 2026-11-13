@@ -31,7 +31,7 @@ class ProjectSeeder extends Seeder
             $tasks = Task::factory()->count(6)->create([
                 'organization_id' => $org->id,
                 'project_id' => fn () => $projects->random()->id,
-                'assigned_to' => fn () => $users->random()->id,
+                'assigned_to' => fn () => $users->isNotEmpty() ? $users->random()->id : null,
             ]);
 
             // 4 milestones
@@ -47,7 +47,7 @@ class ProjectSeeder extends Seeder
             foreach ($tasks->take(3) as $task) {
                 TimeEntry::create([
                     'organization_id' => $org->id,
-                    'user_id' => $task->assigned_to ?? $users->random()->id,
+                    'user_id' => $task->assigned_to ?? ($users->isNotEmpty() ? $users->random()->id : User::first()?->id),
                     'project_id' => $task->project_id,
                     'task_id' => $task->id,
                     'date' => now()->subDays(fake()->numberBetween(0, 7)),

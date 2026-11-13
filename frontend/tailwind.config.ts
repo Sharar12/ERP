@@ -1,3 +1,6 @@
+// File Location: frontend/tailwind.config.ts
+// Purpose: Tailwind CSS Configuration (Colors, Fonts, Breakpoints, Animations)
+
 import type { Config } from "tailwindcss";
 
 const config: Config = {

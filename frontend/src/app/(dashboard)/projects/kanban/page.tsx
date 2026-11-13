@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
-import { taskService } from "@/services/mock/extended";
+import { taskService } from "@/services";
 
 const COLS = ["todo", "in_progress", "in_review", "done"];
 

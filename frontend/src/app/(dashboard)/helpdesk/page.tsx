@@ -12,7 +12,7 @@ const columns: Column<any>[] = [
   { key: "customer", header: "Customer", sortValue: r => r.customer, cell: r => r.customer },
   { key: "priority", header: "Priority", sortValue: r => r.priority, cell: r => <Badge tone={r.priority === "urgent" ? "danger" : r.priority === "high" ? "warning" : "info"}>{r.priority}</Badge> },
   { key: "assignedTo", header: "Assigned To", cell: r => r.assignedTo },
-  { key: "status", header: "Status", sortValue: r => r.status, cell: r => <Badge tone={statusTone(r.status)}>{r.status.replace("_", " ")}</Badge> },
+  { key: "status", header: "Status", sortValue: r => r.status, cell: r => <Badge tone={statusTone(r.status)}>{(r.status || "open").replace("_", " ")}</Badge> },
 ];
 
 export default function HelpdeskPage() {

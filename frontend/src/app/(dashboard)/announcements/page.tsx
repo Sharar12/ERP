@@ -7,9 +7,9 @@ import { announcementService } from "@/services";
 
 const columns: Column<any>[] = [
   { key: "title", header: "Title", sortValue: r => r.title, cell: r => <span className="font-medium">{r.title}</span> },
-  { key: "category", header: "Category", cell: r => r.category },
-  { key: "author", header: "Author", cell: r => r.author },
-  { key: "date", header: "Date", sortValue: r => r.date, cell: r => r.date },
+  { key: "audience", header: "Audience", cell: r => <span className="capitalize">{r.audience ?? r.category ?? "All"}</span> },
+  { key: "author", header: "Author", cell: r => typeof r.author === "object" ? (r.author?.name ?? "System") : (r.author ?? "System") },
+  { key: "date", header: "Date", sortValue: r => r.published_at ?? r.created_at ?? r.date, cell: r => (r.published_at ?? r.created_at ?? r.date ?? "").slice(0, 10) },
 ];
 
 export default function AnnouncementsPage() {

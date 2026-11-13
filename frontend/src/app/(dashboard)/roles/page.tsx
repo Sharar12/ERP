@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { Input } from "@/components/ui/input";
 import { Field } from "@/components/ui/field";
-import { MOCK_ROLES } from "@/mock-data/seed";
+import { roleService } from "@/services";
 import type { Role } from "@/types";
 import Link from "next/link";
 import { useToast } from "@/components/ui/toast";
@@ -18,14 +18,22 @@ export default function RolesPage() {
   const [form, setForm] = useState({ name: "", description: "" });
   const toast = useToast();
 
-  useEffect(() => { setRoles(MOCK_ROLES.slice()); }, []);
+  const load = () => {
+    roleService.getAll().then(setRoles).catch(() => setRoles([]));
+  };
 
-  const create = () => {
-    /* MOCK CRUD — API REPLACEMENT: POST /api/v1/roles */
-    const r: Role = { id: `role_${Date.now()}`, name: form.name, description: form.description, permissions: [], isSystem: false, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
-    setRoles([...roles, r]);
-    setOpen(false); setForm({ name: "", description: "" });
-    toast.push("Role created", "success");
+  useEffect(() => { load(); }, []);
+
+  const create = async () => {
+    try {
+      await roleService.create({ name: form.name, description: form.description } as any);
+      setOpen(false);
+      setForm({ name: "", description: "" });
+      toast.push("Role created", "success");
+      load();
+    } catch (e: any) {
+      toast.push(e.message || "Failed to create role", "error");
+    }
   };
 
   return (
@@ -41,11 +49,15 @@ export default function RolesPage() {
                   <div className="font-semibold">{r.name}</div>
                   <div className="text-xs text-muted-foreground">{r.description}</div>
                 </div>
-                {r.isSystem && <Badge tone="muted">System</Badge>}
+                {(r.isSystem ?? (r as any).is_system) && <Badge tone="muted">System</Badge>}
               </div>
               <div className="mt-3 flex flex-wrap gap-1">
-                {r.permissions.slice(0, 6).map(p => <Badge key={p} tone="info">{p}</Badge>)}
-                {r.permissions.length > 6 && <Badge tone="muted">+{r.permissions.length - 6}</Badge>}
+                {(r.permissions ?? []).slice(0, 6).map((p: any) => (
+                  <Badge key={typeof p === 'string' ? p : p.name ?? p.id} tone="info">
+                    {typeof p === 'string' ? p : p.name ?? p.slug}
+                  </Badge>
+                ))}
+                {(r.permissions ?? []).length > 6 && <Badge tone="muted">+{(r.permissions ?? []).length - 6}</Badge>}
               </div>
               <div className="mt-3 text-right">
                 <Link href={`/roles/${r.id}`}><Button variant="outline" size="sm">Edit Permissions</Button></Link>
@@ -64,4 +76,3 @@ export default function RolesPage() {
     </div>
   );
 }
-

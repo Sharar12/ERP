@@ -1,17 +1,31 @@
-"use client";
-import { useState } from "react";
+// File Location: frontend/src/components/ui/tooltip.tsx
+// Purpose: Minimal Hover Tooltip Indicator
 
-export function Tooltip({ label, children }: { label: string; children: React.ReactNode }) {
-  const [show, setShow] = useState(false);
-  return (
-    <span className="relative inline-flex" onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
-      {children}
-      {show && (
-        <span className="absolute bottom-full left-1/2 z-50 mb-1 -translate-x-1/2 whitespace-nowrap rounded bg-foreground px-2 py-1 text-xs text-background">
-          {label}
-        </span>
-      )}
-    </span>
-  );
+'use client';
+
+import * as React from 'react';
+import { cn } from '@/lib/utils';
+
+export interface TooltipProps {
+  content: React.ReactNode;
+  children: React.ReactNode;
+  side?: 'top' | 'bottom';
+  className?: string;
 }
 
+export function Tooltip({ content, children, side = 'top', className }: TooltipProps) {
+  return (
+    <div className={cn('group relative inline-flex', className)}>
+      {children}
+      <div
+        role="tooltip"
+        className={cn(
+          'pointer-events-none absolute left-1/2 z-50 -translate-x-1/2 whitespace-nowrap rounded-lg bg-slate-900 px-2.5 py-1.5 text-xs font-medium text-white opacity-0 shadow-md transition-opacity duration-150 group-hover:opacity-100 dark:bg-slate-800',
+          side === 'top' ? 'bottom-full mb-2' : 'top-full mt-2'
+        )}
+      >
+        {content}
+      </div>
+    </div>
+  );
+}

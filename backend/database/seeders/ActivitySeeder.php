@@ -18,7 +18,7 @@ class ActivitySeeder extends Seeder
             for ($i = 0; $i < 5; $i++) {
                 ActivityLog::create([
                     'organization_id' => $org->id,
-                    'user_id' => $users->random()->id,
+                    'user_id' => $users->isNotEmpty() ? $users->random()->id : null,
                     'event' => fake()->randomElement(['customer.created', 'invoice.paid', 'task.completed', 'user.invited']),
                     'description' => fake()->sentence(6),
                 ]);
@@ -28,7 +28,7 @@ class ActivitySeeder extends Seeder
             foreach (range(1, 2) as $i) {
                 Announcement::create([
                     'organization_id' => $org->id,
-                    'created_by' => $users->first()->id,
+                    'created_by' => $users->isNotEmpty() ? $users->first()->id : null,
                     'title' => fake()->sentence(3),
                     'body' => fake()->paragraph(),
                     'published_at' => now()->subDays(fake()->numberBetween(1, 10)),

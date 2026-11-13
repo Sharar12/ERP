@@ -1,8 +1,8 @@
 // DATA PROVIDER CONFIGURATION
-// Phase 3: API is now the active provider.
-// To go back to mock for offline dev, change to "mock".
+// Universal ERP is 100% connected to the real PHP Laravel backend and MySQL database.
+// No mock data.
 
 export const DATA_PROVIDER = 'api' as const;
-export type DataProvider = 'mock' | 'api';
-export const PROVIDER: DataProvider = DATA_PROVIDER;
+export type DataProvider = 'api';
+export const PROVIDER: DataProvider = 'api';
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000/api/v1';

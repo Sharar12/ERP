@@ -1,95 +1,214 @@
-"use client";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useMemo, useState } from "react";
-import { ChevronDown, ChevronsLeft, ChevronsRight } from "lucide-react";
-import { NAV_ITEMS } from "@/constants/navigation";
-import { MOCK_MODULES } from "@/mock-data/seed"; /* MOCK CONFIG: module visibility; API REPLACEMENT: modules API */
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+// File Location: frontend/src/components/layout/sidebar.tsx
+// Purpose: Collapsible Desktop Navigation Sidebar (Connected to NAV_ITEMS & dynamic modules)
 
-/* MOCK CONFIG: read enabled modules from in-memory seed for nav filtering. */
-const enabledModules = new Set(MOCK_MODULES.filter(m => m.enabled).map(m => m.key));
+'use client';
 
-export function Sidebar() {
+import * as React from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronDown,
+  Building2,
+} from 'lucide-react';
+import { NAV_ITEMS, type NavItem } from '@/constants/navigation';
+import { moduleService } from '@/services';
+import { cn } from '@/lib/utils';
+
+export interface SidebarProps {
+  collapsed?: boolean;
+  onToggleCollapse?: () => void;
+  organizationName?: string;
+  organizationPlan?: string;
+}
+
+export function Sidebar({
+  collapsed: controlledCollapsed,
+  onToggleCollapse,
+  organizationName = 'Universal ERP',
+  organizationPlan = 'Enterprise Cloud',
+}: SidebarProps) {
   const pathname = usePathname();
-  const [collapsed, setCollapsed] = useState(false);
-  const [openGroups, setOpenGroups] = useState<Set<string>>(new Set(NAV_ITEMS.filter(n => pathname.startsWith(n.href)).map(n => n.href)));
+  const [internalCollapsed, setInternalCollapsed] = React.useState(false);
+  const collapsed = controlledCollapsed ?? internalCollapsed;
 
-  const items = useMemo(() => NAV_ITEMS.filter(item => !item.moduleKey || enabledModules.has(item.moduleKey)), []);
+  const handleToggle = () => {
+    if (onToggleCollapse) {
+      onToggleCollapse();
+    } else {
+      setInternalCollapsed((prev) => !prev);
+    }
+  };
+
+  const [openGroups, setOpenGroups] = React.useState<Record<string, boolean>>({});
+  const [enabledModules, setEnabledModules] = React.useState<Set<string> | null>(null);
+
+  React.useEffect(() => {
+    moduleService
+      .getAll()
+      .then((mods) => {
+        if (Array.isArray(mods) && mods.length > 0) {
+          const enabled = new Set(
+            mods
+              .filter((m: any) => m.enabled ?? m.is_enabled ?? true)
+              .map((m: any) => m.key ?? m.slug)
+          );
+          setEnabledModules(enabled);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const items = React.useMemo(() => {
+    return NAV_ITEMS.filter((item) => {
+      if (!item.moduleKey) return true;
+      if (!enabledModules) return true;
+      return enabledModules.has(item.moduleKey);
+    });
+  }, [enabledModules]);
+
+  React.useEffect(() => {
+    const activeParent = items.find((item) =>
+      item.children?.some((sub) => pathname === sub.href || pathname.startsWith(sub.href + '/'))
+    );
+    if (activeParent) {
+      setOpenGroups((prev) => ({ ...prev, [activeParent.href]: true }));
+    }
+  }, [pathname, items]);
+
+  const toggleGroup = (href: string) => {
+    setOpenGroups((prev) => ({ ...prev, [href]: !prev[href] }));
+  };
 
   return (
-    <aside className={cn("hidden h-screen shrink-0 flex-col border-r border-border bg-card md:flex transition-[width] duration-300 ease-out", collapsed ? "w-14" : "w-60")}>
-      <div className="flex h-12 items-center justify-between border-b border-border px-3">
-        {!collapsed && (
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="h-6 w-6 rounded-md bg-foreground" />
-            <span className="text-[13px] font-semibold tracking-tight">Universal ERP</span>
-          </Link>
-        )}
-        <Button variant="ghost" size="icon" onClick={() => setCollapsed(v => !v)}>
-          {collapsed ? <ChevronsRight className="h-4 w-4" /> : <ChevronsLeft className="h-4 w-4" />}
-        </Button>
+    <aside
+      className={cn(
+        'hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:z-30 border-r border-slate-200 bg-white transition-all duration-200 dark:border-slate-800 dark:bg-slate-900',
+        collapsed ? 'lg:w-[72px]' : 'lg:w-64'
+      )}
+    >
+      {/* Brand Header */}
+      <div className="flex h-16 items-center justify-between border-b border-slate-200/80 px-4 dark:border-slate-800">
+        <Link href="/dashboard" className="flex items-center gap-3 overflow-hidden">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-xs">
+            <Building2 className="h-5 w-5" />
+          </div>
+          {!collapsed && (
+            <div className="truncate">
+              <p className="truncate text-sm font-semibold tracking-tight text-slate-900 dark:text-white">
+                {organizationName}
+              </p>
+              <p className="truncate text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                {organizationPlan}
+              </p>
+            </div>
+          )}
+        </Link>
       </div>
-      <nav className="flex-1 overflow-y-auto p-2">
-        {items.map(item => {
+
+      {/* Nav List */}
+      <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
+        {items.map((item) => {
           const Icon = item.icon;
-          const active = pathname === item.href || pathname.startsWith(item.href + "/");
-          const isOpen = openGroups.has(item.href);
-          const hasChildren = !!item.children?.length;
-          return (
-            <div key={item.href} className="mb-0.5">
-              <div className="flex items-center">
-                <Link
-                  href={item.href}
+          const hasChildren = Boolean(item.children?.length);
+          const isActive =
+            pathname === item.href ||
+            (item.href !== '/dashboard' && pathname.startsWith(item.href));
+          const isOpen = openGroups[item.href] ?? false;
+
+          if (hasChildren && !collapsed) {
+            return (
+              <div key={`${item.href}-${item.label}`} className="space-y-1">
+                <button
+                  type="button"
+                  onClick={() => toggleGroup(item.href)}
                   className={cn(
-                    "group relative flex flex-1 items-center gap-2.5 rounded-md px-2 py-1.5 text-[13px]",
-                    "transition-colors duration-150",
-                    active
-                      ? "bg-muted font-medium text-foreground"
-                      : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+                    'flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                    isActive
+                      ? 'bg-indigo-50/70 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300'
+                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/70 dark:hover:text-slate-100'
                   )}
                 >
-                  {active && (
-                    <span className="absolute left-0 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-r-full bg-foreground" />
-                  )}
-                  <Icon className="h-[15px] w-[15px] shrink-0" />
-                  {!collapsed && <span className="truncate">{item.label}</span>}
-                </Link>
-                {!collapsed && hasChildren && (
-                  <button
-                    onClick={() => {
-                      const n = new Set(openGroups);
-                      n.has(item.href) ? n.delete(item.href) : n.add(item.href);
-                      setOpenGroups(n);
-                    }}
-                    className="p-1 text-muted-foreground hover:text-foreground"
-                  >
-                    <ChevronDown className={cn("h-3.5 w-3.5 transition-transform duration-200 ease-out", isOpen && "rotate-180")} />
-                  </button>
+                  <span className="flex items-center gap-3 truncate">
+                    <Icon
+                      className={cn(
+                        'h-4 w-4 shrink-0',
+                        isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400'
+                      )}
+                    />
+                    <span className="truncate">{item.label}</span>
+                  </span>
+                  <ChevronDown
+                    className={cn(
+                      'h-4 w-4 shrink-0 text-slate-400 transition-transform duration-150',
+                      isOpen && 'rotate-180'
+                    )}
+                  />
+                </button>
+
+                {isOpen && (
+                  <div className="ml-4 space-y-0.5 border-l border-slate-200 pl-3 dark:border-slate-800">
+                    {item.children!.map((sub) => {
+                      const subActive = pathname === sub.href;
+                      return (
+                        <Link
+                          key={sub.href}
+                          href={sub.href}
+                          className={cn(
+                            'block rounded-lg px-3 py-1.5 text-xs font-medium transition-colors',
+                            subActive
+                              ? 'bg-indigo-600 text-white shadow-2xs'
+                              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100'
+                          )}
+                        >
+                          {sub.label}
+                        </Link>
+                      );
+                    })}
+                  </div>
                 )}
               </div>
-              {!collapsed && hasChildren && isOpen && (
-                <div className="ml-9 mt-0.5 space-y-0.5 border-l border-border pl-2">
-                  {item.children!.map(child => (
-                    <Link
-                      key={child.href}
-                      href={child.href}
-                      className={cn(
-                        "block rounded-md px-2 py-1 text-xs transition-colors duration-100",
-                        pathname === child.href ? "font-medium text-foreground" : "text-muted-foreground hover:text-foreground"
-                      )}
-                    >
-                      {child.label}
-                    </Link>
-                  ))}
-                </div>
+            );
+          }
+
+          return (
+            <Link
+              key={`${item.href}-${item.label}`}
+              href={item.children?.[0]?.href ?? item.href}
+              title={collapsed ? item.label : undefined}
+              className={cn(
+                'flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                collapsed ? 'justify-center' : 'gap-3',
+                isActive
+                  ? 'bg-indigo-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/70 dark:hover:text-slate-100'
               )}
-            </div>
+            >
+              <Icon className="h-4 w-4 shrink-0" />
+              {!collapsed && <span className="truncate">{item.label}</span>}
+            </Link>
           );
         })}
       </nav>
+
+      {/* Collapse Action Footer */}
+      <div className="border-t border-slate-200/80 p-3 dark:border-slate-800">
+        <button
+          type="button"
+          onClick={handleToggle}
+          className="flex w-full items-center justify-center gap-2 rounded-lg border border-slate-200 bg-slate-50/70 px-3 py-2 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-950/60 dark:text-slate-400 dark:hover:bg-slate-800"
+        >
+          {collapsed ? (
+            <ChevronRight className="h-4 w-4" />
+          ) : (
+            <>
+              <ChevronLeft className="h-4 w-4" />
+              <span>Collapse Sidebar</span>
+            </>
+          )}
+        </button>
+      </div>
     </aside>
   );
 }
-

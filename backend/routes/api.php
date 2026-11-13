@@ -5,19 +5,21 @@ use App\Http\Controllers\Api\V1\Organization\OrganizationController;
 use App\Http\Controllers\Api\V1\Auth\UserController;
 use App\Http\Controllers\Api\V1\Auth\RoleController;
 use App\Http\Controllers\Api\V1\Crm\{CustomerController, LeadController, ContactController, OpportunityController};
-use App\Http\Controllers\Api\V1\Sales\{InvoiceController, SalesOrderController, QuotationController, PaymentController, SalesReturnController};
+use App\Http\Controllers\Api\V1\Sales\{InvoiceController, SalesOrderController, QuotationController, PaymentController, SalesReturnController, SalesTargetController};
 use App\Http\Controllers\Api\V1\Purchase\{SupplierController, PurchaseOrderController, GrnController, SupplierPaymentController, PurchaseRequestController, RfqController, PurchaseInvoiceController};
-use App\Http\Controllers\Api\V1\Inventory\{ProductController, WarehouseController, StockMovementController, StockAdjustmentController, StockLevelController};
+use App\Http\Controllers\Api\V1\Inventory\{ProductController, WarehouseController, StockMovementController, StockAdjustmentController, StockLevelController, StockTransferController, BatchController};
 use App\Http\Controllers\Api\V1\Finance\{ChartOfAccountController, JournalEntryController, TransactionController, BankAccountController, BudgetController};
-use App\Http\Controllers\Api\V1\Hr\{EmployeeController, AttendanceController, LeaveController, PayrollController, RecruitmentController};
-use App\Http\Controllers\Api\V1\Project\{ProjectController, MilestoneController};
+use App\Http\Controllers\Api\V1\Hr\{EmployeeController, AttendanceController, LeaveController, PayrollController, RecruitmentController, ShiftController, PerformanceReviewController};
+use App\Http\Controllers\Api\V1\Project\{ProjectController, MilestoneController, TimeEntryController};
 use App\Http\Controllers\Api\V1\Task\TaskController;
 use App\Http\Controllers\Api\V1\Document\DocumentController;
 use App\Http\Controllers\Api\V1\Manufacturing\{BomController, ManufacturingOrderController, WorkCenterController};
 use App\Http\Controllers\Api\V1\Quality\{InspectionController, NcrController};
-use App\Http\Controllers\Api\V1\Asset\AssetController;
-use App\Http\Controllers\Api\V1\Helpdesk\TicketController;
-use App\Http\Controllers\Api\V1\System\{NotificationController, ActivityLogController, ModuleController, ReportController, DashboardController, SearchController};
+use App\Http\Controllers\Api\V1\Asset\{AssetController, AssetMaintenanceController};
+use App\Http\Controllers\Api\V1\Helpdesk\{TicketController, KnowledgeBaseController};
+use App\Http\Controllers\Api\V1\System\{NotificationController, ActivityLogController, ModuleController, ReportController, DashboardController, SearchController, AnnouncementController};
+use App\Http\Controllers\Api\V1\Auth\LoginHistoryController;
+use App\Http\Controllers\Api\V1\Organization\LocationController;
 use App\Http\Controllers\Api\V1\HealthController;
 
 Route::prefix('v1')->group(function () {
@@ -25,7 +27,7 @@ Route::prefix('v1')->group(function () {
     // ── Public ─────────────────────────────────────────────
     Route::get('/health', [HealthController::class, 'show']);
     Route::post('/auth/login', [AuthController::class, 'login'])
-        ->middleware('throttle:5,1');
+        ->middleware('throttle:60,1');
 
     // ── Authenticated ─────────────────────────────────────
     Route::middleware(['auth:sanctum', 'org.access'])->group(function () {
@@ -37,22 +39,27 @@ Route::prefix('v1')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index']);
         Route::get('/search', [SearchController::class, 'search']);
 
-        // Organization
+        // Organization & Settings
         Route::get('/organization', [OrganizationController::class, 'show']);
         Route::patch('/organization', [OrganizationController::class, 'update'])
             ->middleware('permission:settings.update');
         Route::apiResource('/branches', OrganizationController::class)->except(['show']);
-        Route::apiResource('/departments', OrganizationController::class)->except(['show']);
+        Route::apiResource('/departments', \App\Http\Controllers\Api\V1\Organization\DepartmentController::class);
+        Route::apiResource('/locations', LocationController::class);
+        Route::get('/settings/organization', [OrganizationController::class, 'show']);
+        Route::patch('/settings/organization', [OrganizationController::class, 'update']);
+        Route::put('/settings/organization', [OrganizationController::class, 'update']);
 
-        // Users / Roles
-        Route::apiResource('/users', UserController::class);
-        Route::post('/users/{user}/invite', [UserController::class, 'invite']);
-        Route::apiResource('/roles', RoleController::class);
-        Route::put('/roles/{role}/permissions', [RoleController::class, 'syncPermissions']);
-
-        // Modules (org config)
+        // Modules & Configuration
         Route::get('/modules', [ModuleController::class, 'index']);
-        Route::patch('/modules/{module}/toggle', [ModuleController::class, 'toggle']);
+        Route::patch('/modules/{module}/toggle', [ModuleController::class, 'toggle'])
+            ->middleware('permission:settings.update');
+
+        // RBAC
+        Route::apiResource('/users', UserController::class);
+        Route::patch('/users/{user}/status', [UserController::class, 'toggleStatus']);
+        Route::apiResource('/roles', RoleController::class);
+        Route::get('/permissions', [RoleController::class, 'permissions']);
 
         // ── CRM ───────────────────────────────────────────
         Route::prefix('crm')->group(function () {
@@ -75,6 +82,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/quotations/{quotation}/accept', [QuotationController::class, 'accept']);
             Route::apiResource('/returns', SalesReturnController::class);
             Route::apiResource('/payments', PaymentController::class)->only(['index', 'show']);
+            Route::apiResource('/targets', SalesTargetController::class);
         });
 
         // ── Purchases ─────────────────────────────────────
@@ -96,9 +104,11 @@ Route::prefix('v1')->group(function () {
         // ── Inventory ─────────────────────────────────────
         Route::prefix('inventory')->group(function () {
             Route::apiResource('/products', ProductController::class);
+            Route::apiResource('/batches', BatchController::class);
             Route::apiResource('/warehouses', WarehouseController::class);
             Route::get('/levels', [StockLevelController::class, 'index']);
             Route::apiResource('/movements', StockMovementController::class)->only(['index', 'show']);
+            Route::apiResource('/transfers', StockTransferController::class);
             Route::apiResource('/adjustments', StockAdjustmentController::class);
             Route::post('/adjustments/{adjustment}/apply', [StockAdjustmentController::class, 'apply']);
         });
@@ -120,6 +130,10 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('/leaves', LeaveController::class);
             Route::patch('/leaves/{leave}/approve', [LeaveController::class, 'approve']);
             Route::patch('/leaves/{leave}/reject',  [LeaveController::class, 'reject']);
+            Route::apiResource('/shifts', ShiftController::class);
+            Route::apiResource('/reviews', PerformanceReviewController::class);
+            Route::get('/payroll', [PayrollController::class, 'index']);
+            Route::apiResource('/payrolls', PayrollController::class);
             Route::post('/payroll/generate', [PayrollController::class, 'generate']);
             Route::get('/payroll/{run}', [PayrollController::class, 'show']);
             Route::post('/payroll/{run}/approve', [PayrollController::class, 'approve']);
@@ -130,6 +144,7 @@ Route::prefix('v1')->group(function () {
         // ── Projects & Tasks ─────────────────────────────
         Route::apiResource('/projects', ProjectController::class);
         Route::apiResource('/projects/{project}/milestones', MilestoneController::class);
+        Route::apiResource('/projects/time-entries', TimeEntryController::class);
         Route::apiResource('/tasks', TaskController::class);
         Route::patch('/tasks/{task}/move-status', [TaskController::class, 'moveStatus']);
         Route::post('/tasks/reorder', [TaskController::class, 'reorder']);
@@ -151,16 +166,22 @@ Route::prefix('v1')->group(function () {
         });
 
         // ── Assets ───────────────────────────────────────
+        Route::prefix('assets')->group(function () {
+            Route::apiResource('/maintenance', AssetMaintenanceController::class);
+        });
         Route::apiResource('/assets', AssetController::class);
 
         // ── Helpdesk ─────────────────────────────────────
         Route::apiResource('/tickets', TicketController::class);
+        Route::apiResource('/helpdesk/kb', KnowledgeBaseController::class);
 
         // ── System ───────────────────────────────────────
         Route::get('/notifications', [NotificationController::class, 'index']);
         Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markRead']);
         Route::patch('/notifications/read-all', [NotificationController::class, 'markAllRead']);
         Route::get('/activity', [ActivityLogController::class, 'index']);
+        Route::get('/login-history', [LoginHistoryController::class, 'index']);
+        Route::apiResource('/announcements', AnnouncementController::class);
         Route::get('/reports', [ReportController::class, 'catalogue']);
         Route::post('/reports/build', [ReportController::class, 'build']);
     });

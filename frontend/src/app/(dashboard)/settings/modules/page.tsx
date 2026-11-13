@@ -17,28 +17,32 @@ export default function ModulesPage() {
     <div>
       <PageHeader title="Module Configuration" description="Enable or disable ERP modules for this organization. Disabled modules are hidden from navigation." />
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {modules.map(m => (
-          <Card key={m.key} className={cn(!m.enabled && "opacity-70")}>
-            <CardContent>
-              <div className="flex items-start justify-between">
-                <div>
-                  <div className="font-semibold">{m.name}</div>
-                  <div className="text-xs text-muted-foreground">{m.category}</div>
+        {modules.map(m => {
+          const deps = Array.isArray(m.dependencies) ? m.dependencies : [];
+          const isEnabled = Boolean(m.enabled ?? (m as any).is_enabled);
+          return (
+            <Card key={m.key} className={cn(!isEnabled && "opacity-70")}>
+              <CardContent>
+                <div className="flex items-start justify-between">
+                  <div>
+                    <div className="font-semibold">{m.name}</div>
+                    <div className="text-xs text-muted-foreground">{m.category}</div>
+                  </div>
+                  <Badge variant={isEnabled ? "success" : "default"}>{isEnabled ? "Enabled" : "Disabled"}</Badge>
                 </div>
-                <Badge tone={m.enabled ? "success" : "muted"}>{m.enabled ? "Enabled" : "Disabled"}</Badge>
-              </div>
-              <p className="mt-2 text-xs text-muted-foreground">{m.description}</p>
-              {m.dependencies.length > 0 && (
-                <p className="mt-2 text-xs"><span className="text-muted-foreground">Depends on:</span> {m.dependencies.join(", ")}</p>
-              )}
-              <div className="mt-3 flex justify-end">
-                <Button variant={m.enabled ? "outline" : "primary"} size="sm" onClick={() => toggle(m.key)}>
-                  {m.enabled ? "Disable" : "Enable"}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+                <p className="mt-2 text-xs text-muted-foreground">{m.description}</p>
+                {deps.length > 0 && (
+                  <p className="mt-2 text-xs"><span className="text-muted-foreground">Depends on:</span> {deps.join(", ")}</p>
+                )}
+                <div className="mt-3 flex justify-end">
+                  <Button variant={isEnabled ? "outline" : "primary"} size="sm" onClick={() => toggle(m.key)}>
+                    {isEnabled ? "Disable" : "Enable"}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );

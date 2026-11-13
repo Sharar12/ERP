@@ -12,8 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge, statusTone } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/input";
-import { dashboardService, invoiceService, productService, transactionService } from "@/services";
-import { activityService, taskService, attendanceService } from "@/services/mock/extended";
+import { dashboardService, invoiceService, productService, transactionService, activityService, taskService, attendanceService } from "@/services";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Invoice, Product, Transaction } from "@/types";
 

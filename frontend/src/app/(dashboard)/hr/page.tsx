@@ -3,8 +3,7 @@ import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
-import { employeeService } from "@/services";
-import { attendanceService, leaveService, payrollService, jobService } from "@/services/mock/extended";
+import { employeeService, attendanceService, leaveService, payrollService, jobService } from "@/services";
 import { formatCurrency } from "@/lib/utils";
 
 export default function HrDashboard() {

@@ -6,8 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs } from "@/components/ui/tabs";
 import { DataTable, type Column } from "@/components/tables/data-table";
 import { Badge } from "@/components/ui/badge";
-import { productService } from "@/services";
-import { stockMovementService, batchService } from "@/services/mock/extended";
+import { productService, stockMovementService, batchService } from "@/services";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Product } from "@/types";
 

@@ -3,8 +3,7 @@ import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
-import { transactionService } from "@/services";
-import { coaService, budgetService } from "@/services/mock/extended";
+import { transactionService, coaService, budgetService } from "@/services";
 import { formatCurrency } from "@/lib/utils";
 
 export default function FinanceDashboard() {

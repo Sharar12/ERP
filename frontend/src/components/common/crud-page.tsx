@@ -1,3 +1,6 @@
+// File Location: frontend/src/components/common/crud-page.tsx
+// Purpose: Generic CRUD Page Layout Template (Standard Header, Data Grid, Create/Edit Modals, Filters)
+
 "use client";
 import { useEffect, useState } from "react";
 import { Pencil, Plus, Trash2 } from "lucide-react";

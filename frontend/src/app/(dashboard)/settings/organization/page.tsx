@@ -1,11 +1,26 @@
 "use client";
+import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MOCK_ORGANIZATIONS } from "@/mock-data/seed"; /* MOCK DATA: replace with GET /api/v1/organizations */
+import { organizationService } from "@/services";
 import { formatDate } from "@/lib/utils";
 
 export default function OrganizationPage() {
-  const org = MOCK_ORGANIZATIONS[0];
+  const [org, setOrg] = useState<any>(null);
+
+  useEffect(() => {
+    organizationService.get().then(setOrg).catch(() => setOrg(null));
+  }, []);
+
+  if (!org) {
+    return (
+      <div>
+        <PageHeader title="Organization" description="Profile, business information and configuration." />
+        <div className="text-sm text-muted-foreground">Loading organization settings…</div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <PageHeader title="Organization" description="Profile, business information and configuration." />
@@ -24,17 +39,22 @@ export default function OrganizationPage() {
         <Card>
           <CardHeader><CardTitle>Localization</CardTitle></CardHeader>
           <CardContent className="space-y-2 text-sm">
-            <Row k="Currency" v={org.currency} />
-            <Row k="Tax Rate" v={`${org.taxRate}%`} />
-            <Row k="Fiscal Year Start" v={formatDate(org.fiscalYearStart)} />
-            <Row k="Enabled Modules" v={`${org.enabledModules.length}`} />
+            <Row k="Currency" v={org.currency ?? "USD"} />
+            <Row k="Timezone" v={org.timezone ?? "UTC"} />
+            <Row k="Locale" v={org.locale ?? "en"} />
+            <Row k="Fiscal Year Start" v={org.fiscal_year_start ?? org.fiscalYearStart ?? "01-01"} />
           </CardContent>
         </Card>
       </div>
     </div>
   );
 }
-function Row({ k, v }: { k: string; v: string }) {
-  return <div className="flex justify-between border-b border-border py-1.5 last:border-0"><span className="text-muted-foreground">{k}</span><span className="font-medium">{v}</span></div>;
-}
 
+function Row({ k, v }: { k: string; v?: string }) {
+  return (
+    <div className="flex justify-between border-b border-border py-1.5 last:border-0">
+      <span className="text-muted-foreground">{k}</span>
+      <span className="font-medium">{v || "—"}</span>
+    </div>
+  );
+}

@@ -93,7 +93,21 @@ class HrSeeder extends Seeder
             }
 
             // 3 recruitment jobs
-            RecruitmentJob::factory()->count(3)->create(['organization_id' => $org->id]);
+            for ($i = 0; $i < 3; $i++) {
+                RecruitmentJob::create([
+                    'organization_id' => $org->id,
+                    'department_id' => $org->departments()->inRandomOrder()->value('id'),
+                    'title' => fake()->jobTitle(),
+                    'description' => fake()->paragraph(),
+                    'requirements' => fake()->sentence(),
+                    'location' => fake()->city(),
+                    'type' => 'full_time',
+                    'salary_range_min' => 50000,
+                    'salary_range_max' => 90000,
+                    'status' => 'open',
+                    'posted_at' => now()->subDays(fake()->numberBetween(1, 20)),
+                ]);
+            }
 
             // 3 performance reviews
             foreach ($employees->take(3) as $employee) {

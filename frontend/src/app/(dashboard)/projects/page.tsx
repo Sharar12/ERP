@@ -26,7 +26,7 @@ export default function ProjectsPage() {
                     <div className="font-semibold">{p.name}</div>
                     <div className="text-xs text-muted-foreground">{p.clientName}</div>
                   </div>
-                  <Badge tone={statusTone(p.status)}>{p.status.replace("_", " ")}</Badge>
+                  <Badge tone={statusTone(p.status)}>{(p.status || "active").replace("_", " ")}</Badge>
                 </div>
                 <div className="mt-4 space-y-1">
                   <div className="flex justify-between text-xs"><span>Progress</span><span>{p.progress}%</span></div>

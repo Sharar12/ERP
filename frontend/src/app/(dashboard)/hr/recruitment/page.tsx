@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/layout/page-header";
 import { DataTable, type Column } from "@/components/tables/data-table";
 import { Badge, statusTone } from "@/components/ui/badge";
-import { jobService } from "@/services/mock/extended";
+import { jobService } from "@/services";
 import { formatDate } from "@/lib/utils";
 
 const columns: Column<any>[] = [

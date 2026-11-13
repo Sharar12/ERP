@@ -9,8 +9,11 @@ export function formatCurrency(amount: number, currency = "USD") {
   return new Intl.NumberFormat("en-US", { style: "currency", currency, maximumFractionDigits: 0 }).format(amount);
 }
 
-export function formatDate(date: string | Date) {
-  return new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(new Date(date));
+export function formatDate(date: string | Date | null | undefined, fallback = "—") {
+  if (!date) return fallback;
+  const d = typeof date === "string" ? new Date(date) : date;
+  if (isNaN(d.getTime())) return fallback;
+  return new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(d);
 }
 
 export function formatCompact(n: number) {
